@@ -8,9 +8,9 @@
 
 #include "edge.h"
 
-const float PI = 3.14159;
-// ANY EPS's THAT LESS THAN 1 ARE NOT GOOD
-const float EPS = 20;
+const float PI = M_PI;
+// ANY EPS's THAT LESS THAN 10 ARE NOT GOOD
+const float EPS = 10;
 
 float distanceBetweenQPoints(QPointF first, QPointF second);
 
@@ -23,5 +23,7 @@ bool isEqual(float first, float second);
 bool isEqual(QPointF first, QPointF second);
 
 float angleBetweenEdges(Edge first, Edge second);
+
+QPointF rotateVector(QPointF vector, float angle);
 
 #endif // MYMATH_H

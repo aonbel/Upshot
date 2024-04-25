@@ -1,6 +1,3 @@
 #include "carsspawner.h"
 
-CarsSpawner::CarsSpawner()
-{
-
-}
+CarsSpawner::CarsSpawner() = default;

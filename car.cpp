@@ -1,14 +1,27 @@
 #include "car.h"
 
-Car::Car() = default;
+Car::Car() :
+    pos(QPointF()),
+    angle(0),
+    velocity(0),
+    timer(new QTimer)
+{
+    timer->setInterval(TICK_TIME);
+    connect(timer, &QTimer::timeout, this, &Car::Update);
+
+    timer->start();
+}
 
 Car::Car(QPointF pos, float angle) :
     pos(pos),
     angle(angle),
     velocity(0),
-    acceleration(0)
+    timer(new QTimer)
 {
+    timer->setInterval(TICK_TIME);
+    connect(timer, &QTimer::timeout, this, &Car::Update);
 
+    timer->start();
 }
 
 void Car::Rotate(float delta)
@@ -18,16 +31,19 @@ void Car::Rotate(float delta)
 
 void Car::Accelerate(float delta)
 {
-    acceleration += delta;
+    velocity += delta;
 }
 
 void Car::Update()
 {
-    velocity += acceleration;
-
     if (velocity < 0)
     {
         velocity = 0;
+    }
+
+    if (velocity > MAX_SPEED)
+    {
+        velocity = MAX_SPEED;
     }
 
     pos.setX(pos.x() + velocity * qCos(angle));
@@ -49,19 +65,25 @@ float Car::GetVelocity()
     return velocity;
 }
 
-float Car::GetAcceleration()
-{
-    return acceleration;
-}
-
 void Car::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    auto vectorToPoint1 = rotateVector(QPointF(CAR_LENGTH / 2, CAR_WIDTH / 2), angle);
+    auto vectorToPoint2 = rotateVector(QPointF(CAR_LENGTH / 2, -CAR_WIDTH / 2), angle);
+    auto vectorToPoint3 = rotateVector(QPointF(-CAR_LENGTH / 2, -CAR_WIDTH / 2), angle);
+    auto vectorToPoint4 = rotateVector(QPointF(-CAR_LENGTH / 2, CAR_WIDTH / 2), angle);
+
+    auto point1 = pos + vectorToPoint1;
+    auto point2 = pos + vectorToPoint2;
+    auto point3 = pos + vectorToPoint3;
+    auto point4 = pos + vectorToPoint4;
+
+    QPolygonF poly;
+    poly << point1 << point2 << point3 << point4;
+
     painter->save();
-    painter->translate(pos);
-    painter->rotate(angle);
     painter->setPen(QPen(Qt::red));
     painter->setBrush(QBrush(Qt::red));
-    painter->drawRect(-CAR_LENGTH/2, -CAR_WIDTH/2, CAR_LENGTH, CAR_WIDTH);
+    painter->drawPolygon(poly);
     painter->restore();
 }
 

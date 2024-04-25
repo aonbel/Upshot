@@ -53,7 +53,7 @@ void RoadContainer::AddRoad(const QPointF &start, const QPointF &end)
                 }
             }
 
-            Road* newRoad = new Road(start, end, prevRoad, nextRoad, TypeOfRoadDirection::one_way, NumberOfRoadLines::two_lanes);
+            Road* newRoad = new Road(start, end, prevRoad, nextRoad, TypeOfRoadDirection::one_way, NumberOfRoadLines::one_lane);
 
             allRoads->push_back(newRoad);
 

@@ -13,10 +13,10 @@ CarAI::CarAI(QVector<QPointF> *path, QVector<CarAI*>* carAIs) :
 
     timer->start();
 
-    connect(timer, &QTimer::timeout, this, &CarAI::UpdadeCondition);
+    connect(timer, &QTimer::timeout, this, &CarAI::Update);
 }
 
-void CarAI::UpdadeCondition()
+void CarAI::Update()
 {
     if (isEqual(car->GetPosition(), (*path)[currPoint]))
     {
@@ -50,7 +50,7 @@ void CarAI::UpdadeCondition()
         {
             float projectionLength = qSqrt(qPow(distanceBetweenQPoints(position, currPos), 2) - qPow(dist, 2));
 
-            distanceToNearestCar = std::min(distanceToNearestCar, std::max(projectionLength - CAR_LENGTH, (float)0));
+            distanceToNearestCar = std::min(distanceToNearestCar, std::max(projectionLength - CAR_LENGTH, .0f));
         }
     }
 

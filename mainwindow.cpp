@@ -26,10 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
     mainTimer->setInterval(TICK_TIME);
     connect(mainTimer, &QTimer::timeout, this, [this] ()
             {
-        if (carAI)
-                {
-                    //graphicsScene->addItem(carAI->GetCar());
-                }
                 graphicsScene->update();
             });
 
@@ -55,6 +51,8 @@ void MainWindow::on_pushButton_StartSim_clicked()
     }
 
     carAI = new CarAI(path, new QVector<CarAI*>);
+
+    graphicsScene->addItem(carAI->GetCar());
 
     delete edges;
 }

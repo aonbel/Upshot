@@ -11,13 +11,19 @@
 const float CAR_LENGTH = 10;
 const float CAR_WIDTH = 5;
 
-class Car : public QGraphicsItem
+const int UPDATES_PER_SECOND = 60;
+const float TICK_TIME = 1000.0 / UPDATES_PER_SECOND;
+const float MAX_ACCELERATION_DELTA = .2;
+const float MAX_SPEED = 2;
+
+class Car : public QObject, public QGraphicsItem
 {
+    Q_OBJECT
 private:
     QPointF pos;
     float angle;
     float velocity;
-    float acceleration;
+    QTimer* timer;
 public:
     Car();
     Car(QPointF pos, float angle);
@@ -27,7 +33,6 @@ public:
     QPointF GetPosition();
     float GetAngle();
     float GetVelocity();
-    float GetAcceleration();
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;

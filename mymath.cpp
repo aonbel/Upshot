@@ -13,7 +13,8 @@ bool isEqual(float first, float second)
 
 bool isEqual(QPointF first, QPointF second)
 {
-    return distanceBetweenQPoints(first, second) <= EPS;
+    auto dist = distanceBetweenQPoints(first, second);
+    return (dist < EPS);
 }
 
 float angleBetweenEdges(Edge first, Edge second)
@@ -31,5 +32,11 @@ float vectorLength(QPointF vector)
 
 float vectorAngle(QPointF vector)
 {
-    return qAcos(vector.x() / vectorLength(vector));
+    return qAtan2(vector.y(), vector.x());
+}
+
+QPointF rotateVector(QPointF vector, float angle)
+{
+    return QPointF(vector.x() * qCos(angle) - vector.y() * qSin(angle),
+                   vector.x() * qSin(angle) + vector.y() * qCos(angle));
 }
