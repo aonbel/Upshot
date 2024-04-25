@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
             {
         if (carAI)
                 {
-                    graphicsScene->addItem(carAI->GetCar());
+                    //graphicsScene->addItem(carAI->GetCar());
                 }
                 graphicsScene->update();
             });
