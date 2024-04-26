@@ -2,11 +2,6 @@
 
 MouseProcesser::MouseProcesser() = default;
 
-MouseProcesser::MouseProcesser(float segmentLength) : segmentLength(segmentLength)
-{
-
-}
-
 void MouseProcesser::ProcessEventByDividingIntoSegments(QGraphicsSceneMouseEvent *mouseEvent)
 {
     QPointF mousePos = mouseEvent->scenePos();
@@ -15,13 +10,13 @@ void MouseProcesser::ProcessEventByDividingIntoSegments(QGraphicsSceneMouseEvent
     {
         float dist = distanceBetweenQPoints(prevPos, mousePos);
 
-        if (dist > 2 * segmentLength)
+        if (dist > 2 * DEFAULT_SEGMENT_LENGTH)
         {
             prevPos = mousePos;
         }
-        else if (dist > segmentLength)
+        else if (dist > DEFAULT_SEGMENT_LENGTH)
         {
-            auto curr = prevPos + rotateVector(QPointF(segmentLength, .0F), vectorAngle(mousePos - prevPos));
+            auto curr = prevPos + rotateVector(QPointF(DEFAULT_SEGMENT_LENGTH, .0F), vectorAngle(mousePos - prevPos));
 
             emit AnotherSegmentOccured(prevPos, curr);
 

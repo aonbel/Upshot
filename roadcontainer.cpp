@@ -8,58 +8,27 @@ RoadContainer::RoadContainer() :
 
 void RoadContainer::AddRoad(const QPointF &start, const QPointF &end)
 {
-    QVector<Road*> prev;
-    QVector<Road*> next;
-
-    prev.push_back(nullptr);
-    next.push_back(nullptr);
+    Road* newRoad = new Road(start, end, nullptr, nullptr, TypeOfRoadDirection::one_way, NumberOfRoadLines::one_lane);
 
     for (auto road : *allRoads)
     {
-        if (isEqual(road->GetEnd(), start))
+        if (isEqual(road->GetEnd(), start, SENSITIVITY))
         {
-            prev.push_back(road);
-
-            if (prev.size() >= 4)
-            {
-                break;
-            }
+            newRoad->addPrevRoad(road);
         }
     }
 
     for (auto road : *allRoads)
     {
-        if (isEqual(road->GetStart(), end))
+        if (isEqual(road->GetStart(), end, SENSITIVITY))
         {
-            next.push_back(road);
-
-            if (next.size() >= 4)
-            {
-                break;
-            }
+            newRoad->addNextRoad(road);
         }
     }
 
-    for (auto prevRoad : prev)
-    {
-        for (auto nextRoad : next)
-        {
-            if (prevRoad != nullptr && nextRoad != nullptr)
-            {
-                auto angle = angleBetweenEdges(Edge(start, end), Edge(prevRoad->GetEnd(), nextRoad->GetStart()));
-                if (prevRoad == nextRoad || angle >= PI / 8)
-                {
-                    continue;
-                }
-            }
+    allRoads->push_back(newRoad);
 
-            Road* newRoad = new Road(start, end, prevRoad, nextRoad, TypeOfRoadDirection::one_way, NumberOfRoadLines::one_lane);
-
-            allRoads->push_back(newRoad);
-
-            emit NewRoad(newRoad);
-        }
-    }
+    emit NewRoad(newRoad);
 }
 
 QVector<Edge> *RoadContainer::GetGraph() const

@@ -40,9 +40,13 @@ private:
     QVector<QPointF>* startsOfLines;
 
 public:
-    Road(const QPointF& start, const QPointF& end, Road* prev, Road* next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines);
+    Road(const QPointF& start, const QPointF& end, Road* _prev, Road* _next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines);
     Road(Road& obj);
     Road(Road&& obj) noexcept;
+
+    void addNextRoad(Road *_next);
+    void addPrevRoad(Road *_prev);
+
     float GetAngleOfTheRoad() const;
     QVector<Edge>* GetEdgesForGraph() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

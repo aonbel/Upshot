@@ -19,7 +19,7 @@ CarAI::CarAI(QVector<QPointF> *path, QVector<CarAI*>* carAIs) :
 
 void CarAI::Update()
 {
-    if (isEqual(car->GetPosition(), (*path)[currPoint]))
+    while (isEqual(car->GetPosition(), (*path)[currPoint], SUCCESS_EPS))
     {
         currPoint++;
 
@@ -27,43 +27,71 @@ void CarAI::Update()
         {
             delete car;
             processDone = true;
-            timer->stop();
+            disconnect(timer, &QTimer::timeout, this, &CarAI::Update);
             return;
         }
     }
 
     auto angleDelta = vectorAngle((*path)[currPoint] - car->GetPosition()) - car->GetAngle();
 
-    car->Rotate(angleDelta / 2);
+    if (qAbs(angleDelta + 2 * PI) < qAbs(angleDelta))
+    {
+        angleDelta = angleDelta + 2 * PI;
+    }
+
+    if (qAbs(angleDelta - 2 * PI) < qAbs(angleDelta))
+    {
+        angleDelta = angleDelta - 2 * PI;
+    }
+
+    car->Rotate(angleDelta * REACTION_COEFFICIENT);
 
     QPointF position = car->GetPosition();
     float angle = car->GetAngle();
     angleDelta = qAbs(angleDelta);
-    float angleCoef = qTan(car->GetAngle());
-    float offset = position.x() - angleCoef * position.y();
-    float distanceToNearestCar = MAX_VISIBILITY_DISTANCE;
+
+    QPointF rotatedVector = rotateVector(QPointF(1, 0), angle);
+
+    float angleCoef = rotatedVector.y() / rotatedVector.x();
+    float offset = position.y() - angleCoef * position.x();
+    float distanceToNearestCar = MAX_VISIBILITY_LENGTH;
 
     for (auto carAI : *carAIs)
     {
         auto currPos = carAI->GetCarPosition();
 
-        if (qAbs(angleBetweenEdges(Edge(position, currPos), Edge(position, QPointF(position.x() + qCos(angle), position.x() + qSin(angle))))) > PI / 2)
+        if (carAI->isDone() || carAI == this)
         {
             continue;
         }
 
-        float currOffset = currPos.x() - angleCoef * currPos.y();
+        if (qAbs(angleBetweenEdges(Edge(position, currPos), Edge(position, position + rotatedVector))) >= PI / 2)
+        {
+            continue;
+        }
+
+        float currOffset = currPos.y() - angleCoef * currPos.x();
         float dist = currOffset - offset;
 
-        if (dist < CAR_LENGTH / 2)
+        if (dist < MAX_VISIBILITY_LENGTH)
         {
             float projectionLength = qSqrt(qPow(distanceBetweenQPoints(position, currPos), 2) - qPow(dist, 2));
 
             distanceToNearestCar = std::min(distanceToNearestCar, std::max(projectionLength - CAR_LENGTH, .0f));
+
+            qDebug() << distanceToNearestCar;
         }
     }
 
-    car->Accelerate(MAX_ACCELERATION_DELTA * (-angleDelta / PI + 1 - (RATIO_OF_STOPING_TO_INCREASING_SPEED + (1 - RATIO_OF_STOPING_TO_INCREASING_SPEED) * ((MAX_VISIBILITY_DISTANCE - distanceToNearestCar) / MAX_VISIBILITY_DISTANCE))));
+
+    if (distanceToNearestCar == MAX_VISIBILITY_LENGTH)
+    {
+        car->Accelerate(MAX_ACCELERATION_DELTA * (-(angleDelta / PI) + 1 - RATIO_OF_STOPING_FREE));
+    }
+    else
+    {
+        car->Accelerate(MAX_ACCELERATION_DELTA * (distanceToNearestCar / MAX_VISIBILITY_LENGTH - RATIO_OF_STOPING_IN_FRONT));
+    }
 }
 
 bool CarAI::isDone()

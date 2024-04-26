@@ -3,6 +3,8 @@
 
 #include "road.h"
 
+const float SENSITIVITY = 30;
+
 class RoadContainer : public QObject
 {
     Q_OBJECT

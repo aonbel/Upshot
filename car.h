@@ -13,8 +13,8 @@ const float CAR_WIDTH = 5;
 
 const int UPDATES_PER_SECOND = 60;
 const float TICK_TIME = 1000.0 / UPDATES_PER_SECOND;
-const float MAX_ACCELERATION_DELTA = .2;
-const float MAX_SPEED = 2;
+const float MAX_ACCELERATION_DELTA = .4;
+const float MAX_SPEED = 3;
 
 class Car : public QObject, public QGraphicsItem
 {

@@ -12,13 +12,13 @@ std::map<QPointF, QVector<QPointF>* >* PathService::FromEdgesToAdjMatrix(QVector
         if (!been[edge.startPos])
         {
             (*adjMatrix)[edge.startPos] = new QVector<QPointF>;
-            been[edge.startPos] = 1;
+            been[edge.startPos] = true;
         }
 
         if (!been[edge.endPos])
         {
             (*adjMatrix)[edge.endPos] = new QVector<QPointF>;
-            been[edge.endPos] = 1;
+            been[edge.endPos] = true;
         }
 
         (*adjMatrix)[edge.startPos]->push_back(edge.endPos);
@@ -55,9 +55,9 @@ QVector<QPointF> *PathService::FindPath(std::map<QPointF, QVector<QPointF> *> *a
 
         for (auto to : *(*adjMatrix)[vertex])
         {
-            queue.push(to);
             if (dist[to] > dist[vertex] + 1)
             {
+                queue.push(to);
                 dist[to] = dist[vertex] + 1;
                 prev[to] = vertex;
             }

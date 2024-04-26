@@ -10,7 +10,7 @@
 
 const float PI = M_PI;
 // ANY EPS's THAT LESS THAN 10 ARE NOT GOOD
-const float EPS = 15;
+const float EPS = 10;
 const float FLOAT_MAX_VALUE = 1e9;
 const QPointF DEF_QPOINTF(FLOAT_MAX_VALUE, FLOAT_MAX_VALUE);
 
@@ -25,9 +25,9 @@ float vectorLength(QPointF vector);
 
 float vectorAngle(QPointF vector);
 
-bool isEqual(float first, float second);
+bool isEqual(float first, float second, float eps = EPS);
 
-bool isEqual(QPointF first, QPointF second);
+bool isEqual(QPointF first, QPointF second, float eps = EPS);
 
 float angleBetweenEdges(Edge first, Edge second);
 

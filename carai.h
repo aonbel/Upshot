@@ -7,8 +7,12 @@
 #include <QTimer>
 #include <QtCore>
 
-const float RATIO_OF_STOPING_TO_INCREASING_SPEED = 0.75;
-const float MAX_VISIBILITY_DISTANCE = 100.0;
+const float RATIO_OF_STOPING_FREE = 0.8;
+const float RATIO_OF_STOPING_IN_FRONT = 0.3;
+const float MAX_VISIBILITY_LENGTH = 25.0;
+const float MAX_VISIBILITY_WIDTH = 2 * CAR_LENGTH;
+const float REACTION_COEFFICIENT = 0.03;
+const float SUCCESS_EPS = 20;
 
 class CarAI : public QObject
 {

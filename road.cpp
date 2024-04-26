@@ -1,10 +1,10 @@
 #include "road.h"
 
-Road::Road(const QPointF &start, const QPointF &end, Road *prev, Road *next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines) :
+Road::Road(const QPointF &start, const QPointF &end, Road *_prev, Road *_next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines) :
     start(start),
     end(end),
-    prev(prev),
-    next(next),
+    next(_next),
+    prev(_prev),
     typeOfDir(typeOfDir),
     numberOfLines(numberOfLines),
     endsOfLines(new QVector<QPointF>),
@@ -14,40 +14,17 @@ Road::Road(const QPointF &start, const QPointF &end, Road *prev, Road *next, Typ
 
     QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
 
-    // PART WITH FINDING ENDS OF LINES
+    addNextRoad(next);
+    addPrevRoad(prev);
 
     if (next != nullptr)
     {
-        *endsOfLines = *next->endsOfLines;
+        next->addPrevRoad(this);
     }
-    else
-    {
-        QPointF endPos(rotationVector * WIDTH_OF_LINE / 2 + end);
-
-        for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
-        {
-            endsOfLines->push_back(endPos);
-
-            endPos -= WIDTH_OF_LINE * rotationVector;
-        }
-    }
-
-    // PART WITH FINDING STARTS OF LINES
 
     if (prev != nullptr)
     {
-        *startsOfLines = *prev->endsOfLines;
-    }
-    else
-    {
-        QPointF startPos(rotationVector * WIDTH_OF_LINE / 2 + start);
-
-        for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
-        {
-            startsOfLines->push_back(startPos);
-
-            startPos -= WIDTH_OF_LINE * rotationVector;
-        }
+        prev->addNextRoad(this);
     }
 
     // IF BIDIRECTIONAL WE NEED TO REVERSE SOME EDGES
@@ -79,6 +56,8 @@ Road::Road(Road &obj) :
     start(obj.start),
     end(obj.end),
     typeOfDir(obj.typeOfDir),
+    next(obj.next),
+    prev(obj.prev),
     numberOfLines(obj.numberOfLines),
     startsOfLines(obj.startsOfLines),
     endsOfLines(obj.endsOfLines)
@@ -89,12 +68,92 @@ Road::Road(Road &obj) :
 Road::Road(Road &&obj) noexcept :
     start(obj.start),
     end(obj.end),
+    next(obj.next),
+    prev(obj.prev),
     typeOfDir(obj.typeOfDir),
     numberOfLines(obj.numberOfLines),
     startsOfLines(obj.startsOfLines),
     endsOfLines(obj.endsOfLines)
 {
 
+}
+
+void Road::addNextRoad(Road *_next)
+{
+    if (_next == nullptr)
+    {
+        if (next != nullptr)
+        {
+            return;
+        }
+
+        endsOfLines->clear();
+
+        float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
+
+        QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
+
+        QPointF endPos(rotationVector * WIDTH_OF_LINE / 2 + end);
+
+        for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
+        {
+            endsOfLines->push_back(endPos);
+
+            endPos -= WIDTH_OF_LINE * rotationVector;
+        }
+
+        return;
+    }
+
+    if (next == nullptr)
+    {
+        endsOfLines->clear();
+        next = _next;
+    }
+
+    for (auto start : _next->getStartsOfLines())
+    {
+        endsOfLines->push_back(start);
+    }
+}
+
+void Road::addPrevRoad(Road *_prev)
+{
+    if (_prev == nullptr)
+    {
+        if (prev != nullptr)
+        {
+            return;
+        }
+
+        startsOfLines->clear();
+
+        float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
+
+        QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
+
+        QPointF startPos(rotationVector * WIDTH_OF_LINE / 2 + start);
+
+        for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
+        {
+            startsOfLines->push_back(startPos);
+
+            startPos -= WIDTH_OF_LINE * rotationVector;
+        }
+
+        return;
+    }
+
+    if (prev == nullptr)
+    {
+        startsOfLines->clear();
+        prev = _prev;
+    }
+
+    for (auto end : _prev->getEndsOfLines())
+    {
+        startsOfLines->push_back(end);
+    }
 }
 
 float Road::GetAngleOfTheRoad() const
@@ -119,8 +178,6 @@ QVector<Edge>* Road::GetEdgesForGraph() const
 
     return answer;
 }
-
-/// REDO
 
 void Road::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {

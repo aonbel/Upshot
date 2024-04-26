@@ -9,10 +9,14 @@
 #include "roadcontainer.h"
 #include "carai.h"
 #include "pathservice.h"
+#include "carsspawner.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+const int WINDOW_LENGTH = 2000;
+const int WINDOW_WIDTH = 2000;
 
 class MainWindow : public QMainWindow
 {
@@ -30,7 +34,7 @@ private:
     GraphicScene* graphicsScene;
     MouseProcesser* mouseProcesser;
     RoadContainer* roadContainer;
-    CarAI* carAI;
+    CarsSpawner* carsSpawner;
     QTimer* mainTimer;
 };
 #endif // MAINWINDOW_H
