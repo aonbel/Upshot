@@ -77,18 +77,18 @@ void CarAI::Update()
         {
             float projectionLength = qSqrt(qPow(distanceBetweenQPoints(position, currPos), 2) - qPow(dist, 2));
 
-            distanceToNearestCar = std::min(distanceToNearestCar, std::max(projectionLength - CAR_LENGTH, .0f));
+            distanceToNearestCar = std::min(distanceToNearestCar, projectionLength);
         }
     }
 
 
     if (distanceToNearestCar == MAX_VISIBILITY_LENGTH)
     {
-        car->Accelerate(MAX_ACCELERATION_DELTA * (-(angleDelta / PI) + 1 - RATIO_OF_STOPING_FREE));
+        car->Accelerate(MAX_SPEED * PI / angleDelta);
     }
     else
     {
-        car->Accelerate(MAX_ACCELERATION_DELTA * (distanceToNearestCar / MAX_VISIBILITY_LENGTH - RATIO_OF_STOPING_IN_FRONT));
+        car->Accelerate(STOP_POINT - MAX_SPEED * MAX_VISIBILITY_LENGTH / distanceToNearestCar);
     }
 }
 

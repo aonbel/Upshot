@@ -73,7 +73,7 @@ CarsSpawner::CarsSpawner(QVector<Edge> *edges, GraphicScene *graphicsScene) :
 
 void CarsSpawner::Update()
 {
-    if ((*rng)() % 10 == 0)
+    if ((*rng)() % 5 == 0)
     {
         auto pos = (*rng)() % paths->size();
 

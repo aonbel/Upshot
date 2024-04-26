@@ -31,7 +31,7 @@ void Car::Rotate(float delta)
 
 void Car::Accelerate(float delta)
 {
-    velocity += delta;
+    velocity = delta;
 }
 
 void Car::Update()
