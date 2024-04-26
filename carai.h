@@ -11,7 +11,7 @@ const float MAX_VISIBILITY_LENGTH = CAR_LENGTH;
 const float MAX_VISIBILITY_WIDTH = 3 * CAR_LENGTH;
 const float REACTION_COEFFICIENT = 0.3;
 const float SUCCESS_EPS = 10;
-const float STOP_POINT = 0.1 * CAR_LENGTH;
+const float STOP_POINT = 0.05 * CAR_LENGTH;
 
 class CarAI : public QObject
 {

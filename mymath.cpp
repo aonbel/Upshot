@@ -53,3 +53,8 @@ QPointF rotateVector(QPointF vector, float angle)
 {
     return {vector.x() * qCos(angle) - vector.y() * qSin(angle), vector.x() * qSin(angle) + vector.y() * qCos(angle)};
 }
+
+float scalarMultiplicationVectors(QPointF first, QPointF second)
+{
+    return first.x() * second.x() + first.y() * second.y();
+}

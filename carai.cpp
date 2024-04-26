@@ -58,14 +58,14 @@ void CarAI::Update()
 
     for (auto carAI : *carAIs)
     {
-        auto currPos = carAI->GetCarPosition();
-
         if (carAI->isDone() || carAI == this)
         {
             continue;
         }
 
-        if (qAbs(angleBetweenEdges(Edge(position, currPos), Edge(position, position + rotatedVector))) >= PI / 2)
+        auto currPos = carAI->GetCarPosition();
+
+        if (scalarMultiplicationVectors(rotatedVector, currPos - position) <= 0)
         {
             continue;
         }
@@ -73,7 +73,7 @@ void CarAI::Update()
         float currOffset = currPos.y() - angleCoef * currPos.x();
         float dist = currOffset - offset;
 
-        if (dist < MAX_VISIBILITY_LENGTH)
+        if (qAbs(dist) < MAX_VISIBILITY_LENGTH)
         {
             float projectionLength = qSqrt(qPow(distanceBetweenQPoints(position, currPos), 2) - qPow(dist, 2));
 

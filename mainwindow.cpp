@@ -39,7 +39,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_StartSim_clicked()
 {
+    auto edges = roadContainer->GetGraph();
+
     disconnect(graphicsScene, &GraphicScene::mouseEventOccured, mouseProcesser, &MouseProcesser::ProcessEventByDividingIntoSegments);
-    carsSpawner = new CarsSpawner(roadContainer->GetGraph(), graphicsScene);
+    carsSpawner = new CarsSpawner(edges, graphicsScene);
 }
 

@@ -33,4 +33,6 @@ float angleBetweenEdges(Edge first, Edge second);
 
 QPointF rotateVector(QPointF vector, float angle);
 
+float scalarMultiplicationVectors(QPointF first, QPointF second);
+
 #endif // MYMATH_H
