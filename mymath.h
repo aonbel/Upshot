@@ -3,8 +3,8 @@
 
 #include <QtMath>
 #include <QtCore>
-#include <vector>
 #include <algorithm>
+#include <queue>
 
 #include "edge.h"
 

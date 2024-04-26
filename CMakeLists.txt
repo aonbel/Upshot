@@ -36,6 +36,8 @@ set(PROJECT_SOURCES
         carai.cpp
         carsspawner.h
         carsspawner.cpp
+        pathservice.h
+        pathservice.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
