@@ -4,13 +4,6 @@
 
 > Program to simulate carflow on upshots
 
-## Author
-
-👤 **Aonbel**
-
-* Website: hmmm
-* Github: [@aonbel](https://github.com/aonbel)
-
 ## How to use
 
 You can draw needed roads on the canva and then press Start
