@@ -7,7 +7,8 @@ CarAI::CarAI(QVector<QPointF> *path, QVector<CarAI*>* carAIs) :
     path(path),
     timer(new QTimer),
     currPoint(1),
-    carAIs(carAIs)
+    carAIs(carAIs),
+    processDone(false)
 {
     timer->setInterval(TICK_TIME);
 
@@ -21,6 +22,14 @@ void CarAI::Update()
     if (isEqual(car->GetPosition(), (*path)[currPoint]))
     {
         currPoint++;
+
+        if (currPoint == path->size())
+        {
+            delete car;
+            processDone = true;
+            timer->stop();
+            return;
+        }
     }
 
     auto angleDelta = vectorAngle((*path)[currPoint] - car->GetPosition()) - car->GetAngle();
@@ -55,6 +64,11 @@ void CarAI::Update()
     }
 
     car->Accelerate(MAX_ACCELERATION_DELTA * (-angleDelta / PI + 1 - (RATIO_OF_STOPING_TO_INCREASING_SPEED + (1 - RATIO_OF_STOPING_TO_INCREASING_SPEED) * ((MAX_VISIBILITY_DISTANCE - distanceToNearestCar) / MAX_VISIBILITY_DISTANCE))));
+}
+
+bool CarAI::isDone()
+{
+    return processDone;
 }
 
 QPointF CarAI::GetCarPosition()

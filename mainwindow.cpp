@@ -42,17 +42,20 @@ void MainWindow::on_pushButton_StartSim_clicked()
 {
     auto edges = roadContainer->GetGraph();
 
-    QVector<QPointF>* path = new QVector<QPointF>;
-
-    for (auto edge: *edges)
+    for (auto edge : *edges)
     {
-        graphicsScene->addLine(QLineF(edge.startPos, edge.endPos));
-        path->push_back(edge.startPos);
+        graphicsScene->addLine(QLineF(edge.startPos, edge.endPos), QPen(Qt::green));
+        graphicsScene->addLine(QLineF(edge.endPos, edge.endPos), QPen(Qt::red, 4));
     }
 
-    carAI = new CarAI(path, new QVector<CarAI*>);
+    auto path = PathService::FindPath(PathService::FromEdgesToAdjMatrix(edges), edges->front().startPos, edges->back().endPos);
 
-    graphicsScene->addItem(carAI->GetCar());
+    if (path != nullptr)
+    {
+        carAI = new CarAI(path, new QVector<CarAI*>);
+
+        graphicsScene->addItem(carAI->GetCar());
+    }
 
     delete edges;
 }

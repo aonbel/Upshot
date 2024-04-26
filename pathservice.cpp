@@ -1,22 +1,24 @@
 #include "pathservice.h"
 
-const float MAX_VALUE = 1e9;
-const QPointF DEF_QPOINTF {MAX_VALUE, MAX_VALUE};
-
-PathService::PathService()
-{
-
-}
+PathService::PathService() = default;
 
 std::map<QPointF, QVector<QPointF>* >* PathService::FromEdgesToAdjMatrix(QVector<Edge> *edges)
 {
-    std::map<QPointF, QVector<QPointF>* >* adjMatrix = new std::map<QPointF, QVector<QPointF>* >;
+    std::map<QPointF, QVector<QPointF>*>* adjMatrix = new std::map<QPointF, QVector<QPointF>* >;
+    std::map<QPointF, bool> been;
 
     for (auto edge : *edges)
     {
-        if ((*adjMatrix)[edge.startPos] == 0)
+        if (!been[edge.startPos])
         {
             (*adjMatrix)[edge.startPos] = new QVector<QPointF>;
+            been[edge.startPos] = 1;
+        }
+
+        if (!been[edge.endPos])
+        {
+            (*adjMatrix)[edge.endPos] = new QVector<QPointF>;
+            been[edge.endPos] = 1;
         }
 
         (*adjMatrix)[edge.startPos]->push_back(edge.endPos);
@@ -29,11 +31,12 @@ QVector<QPointF> *PathService::FindPath(std::map<QPointF, QVector<QPointF> *> *a
 {
     std::map<QPointF, float> dist;
     std::map<QPointF, QPointF> prev;
+    std::map<QPointF, bool> been;
 
     for (auto vertex : *adjMatrix)
     {
-        dist[vertex.first] = MAX_VALUE;
-        prev[start] = DEF_QPOINTF;
+        dist[vertex.first] = FLOAT_MAX_VALUE;
+        prev[vertex.first] = DEF_QPOINTF;
     }
 
     dist[start] = 0;
@@ -42,12 +45,13 @@ QVector<QPointF> *PathService::FindPath(std::map<QPointF, QVector<QPointF> *> *a
 
     while (!queue.empty())
     {
-        auto vertex = queue.back();
+        auto vertex = queue.front();
         queue.pop();
-        if (dist[vertex] != MAX_VALUE)
+        if (been[vertex])
         {
             continue;
         }
+        been[vertex] = true;
 
         for (auto to : *(*adjMatrix)[vertex])
         {
@@ -60,12 +64,12 @@ QVector<QPointF> *PathService::FindPath(std::map<QPointF, QVector<QPointF> *> *a
         }
     }
 
-    if (dist[end] == MAX_VALUE)
+    if (dist[end] == FLOAT_MAX_VALUE)
     {
         return nullptr;
     }
 
-    QVector<QPointF>* path;
+    QVector<QPointF>* path = new QVector<QPointF>;
 
     QPointF curr = end;
 
@@ -74,6 +78,8 @@ QVector<QPointF> *PathService::FindPath(std::map<QPointF, QVector<QPointF> *> *a
         path->push_back(curr);
         curr = prev[curr];
     }
+
+    std::reverse(path->begin(), path->end());
 
     return path;
 }

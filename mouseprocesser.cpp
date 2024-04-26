@@ -9,19 +9,23 @@ MouseProcesser::MouseProcesser(float segmentLength) : segmentLength(segmentLengt
 
 void MouseProcesser::ProcessEventByDividingIntoSegments(QGraphicsSceneMouseEvent *mouseEvent)
 {
+    QPointF mousePos = mouseEvent->scenePos();
+
     if (mouseEvent->type() == QGraphicsSceneMouseEvent::GraphicsSceneMouseMove)
     {
-        QPointF mousePos = mouseEvent->scenePos();
         float dist = distanceBetweenQPoints(prevPos, mousePos);
-        if (isEqual(dist, segmentLength))
-        {
-            emit AnotherSegmentOccured(prevPos, mousePos);
 
+        if (dist > 2 * segmentLength)
+        {
             prevPos = mousePos;
         }
-        else if (segmentLength < dist)
+        else if (dist > segmentLength)
         {
-            prevPos = mousePos;
+            auto curr = prevPos + rotateVector(QPointF(segmentLength, .0F), vectorAngle(mousePos - prevPos));
+
+            emit AnotherSegmentOccured(prevPos, curr);
+
+            prevPos = curr;
         }
     }
 }

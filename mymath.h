@@ -10,7 +10,14 @@
 
 const float PI = M_PI;
 // ANY EPS's THAT LESS THAN 10 ARE NOT GOOD
-const float EPS = 10;
+const float EPS = 15;
+const float FLOAT_MAX_VALUE = 1e9;
+const QPointF DEF_QPOINTF(FLOAT_MAX_VALUE, FLOAT_MAX_VALUE);
+
+inline bool operator<(const QPointF &p1, const QPointF &p2)
+{
+    return p1.x() * FLOAT_MAX_VALUE + p1.y() < p2.x() * FLOAT_MAX_VALUE + p2.y();
+}
 
 float distanceBetweenQPoints(QPointF first, QPointF second);
 

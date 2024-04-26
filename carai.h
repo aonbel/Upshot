@@ -19,10 +19,12 @@ private:
     int currPoint;
     QTimer* timer;
     QVector<CarAI*>* carAIs;
+    bool processDone;
 public:
     CarAI();
     CarAI(QVector<QPointF>* path, QVector<CarAI*>* carAIs);
     void Update();
+    bool isDone();
     QPointF GetCarPosition();
     Car* GetCar();
 };

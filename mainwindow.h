@@ -8,6 +8,7 @@
 #include "mouseprocesser.h"
 #include "roadcontainer.h"
 #include "carai.h"
+#include "pathservice.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
