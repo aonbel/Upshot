@@ -78,8 +78,6 @@ void CarAI::Update()
             float projectionLength = qSqrt(qPow(distanceBetweenQPoints(position, currPos), 2) - qPow(dist, 2));
 
             distanceToNearestCar = std::min(distanceToNearestCar, std::max(projectionLength - CAR_LENGTH, .0f));
-
-            qDebug() << distanceToNearestCar;
         }
     }
 

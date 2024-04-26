@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , graphicsScene(new GraphicScene)
-    , mouseProcesser(new MouseProcesser(40))
+    , mouseProcesser(new MouseProcesser())
     , roadContainer(new RoadContainer)
     , mainTimer(new QTimer)
 {
