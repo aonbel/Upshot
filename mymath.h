@@ -10,7 +10,7 @@
 
 const float PI = M_PI;
 // ANY EPS's THAT LESS THAN 10 ARE NOT GOOD
-const float EPS = 10;
+const float EPS = 100;
 const float FLOAT_MAX_VALUE = 1e9;
 const QPointF DEF_QPOINTF(FLOAT_MAX_VALUE, FLOAT_MAX_VALUE);
 

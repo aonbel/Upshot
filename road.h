@@ -37,8 +37,12 @@ private:
     TypeOfRoadDirection typeOfDir;
     NumberOfRoadLines numberOfLines;
 
-    QVector<QPointF>* endsOfLines;
-    QVector<QPointF>* startsOfLines;
+    QVector<QPointF>* endsOfLinesOnStart;
+    QVector<QPointF>* startsOfLinesOnStart;
+
+    QVector<QPointF>* endsOfLinesOnEnd;
+    QVector<QPointF>* startsOfLinesOnEnd;
+
 public:
     Road(const QPointF& start, const QPointF& end, Road* _prev, Road* _next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines, int level);
     Road(Road& obj);
@@ -52,8 +56,11 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
 
-    QVector<QPointF> getEndsOfLines();
-    QVector<QPointF> getStartsOfLines();
+    QVector<QPointF> getEndsOfLinesOnStart();
+    QVector<QPointF> getStartsOfLinesOnStart();
+
+    QVector<QPointF> getEndsOfLinesOnEnd();
+    QVector<QPointF> getStartsOfLinesOnEnd();
 
     QPointF GetStart() const;
     QPointF GetEnd() const;

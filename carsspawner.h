@@ -16,6 +16,7 @@ class CarsSpawner : public QObject
     std::mt19937* rng;
 public:
     CarsSpawner();
+    ~CarsSpawner() override;
     CarsSpawner(QVector<Edge>* edges, GraphicScene* graphicsScene);
     void Update();
 };

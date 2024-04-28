@@ -11,10 +11,10 @@ private:
     int level;
 public:
     RoadBrush();
-    RoadBrush(TypeOfRoadDirection type, NumberOfRoadLines numberOfLines, int level);
-    void SetType(TypeOfRoadDirection type);
-    void SetNumberOfLines(NumberOfRoadLines numberOfLines);
-    void SetLevel(int level);
+    RoadBrush(TypeOfRoadDirection _type, NumberOfRoadLines _numberOfLines, int _level);
+    void SetType(TypeOfRoadDirection _type);
+    void SetNumberOfLines(NumberOfRoadLines _numberOfLines);
+    void SetLevel(int _level);
     TypeOfRoadDirection GetType();
     NumberOfRoadLines GetNumberOfLines();
     int GetLevel();

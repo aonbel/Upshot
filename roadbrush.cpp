@@ -8,27 +8,27 @@ RoadBrush::RoadBrush() :
 
 }
 
-RoadBrush::RoadBrush(TypeOfRoadDirection type, NumberOfRoadLines numberOfLines, int level) :
-    type(type),
-    numberOfLines(numberOfLines),
-    level(level)
+RoadBrush::RoadBrush(TypeOfRoadDirection _type, NumberOfRoadLines _numberOfLines, int _level) :
+    type(_type),
+    numberOfLines(_numberOfLines),
+    level(_level)
 {
 
 }
 
-void RoadBrush::SetType(TypeOfRoadDirection type)
+void RoadBrush::SetType(TypeOfRoadDirection _type)
 {
-    type = type;
+    type = _type;
 }
 
-void RoadBrush::SetNumberOfLines(NumberOfRoadLines numberOfLines)
+void RoadBrush::SetNumberOfLines(NumberOfRoadLines _numberOfLines)
 {
-    numberOfLines = numberOfLines;
+    numberOfLines = _numberOfLines;
 }
 
-void RoadBrush::SetLevel(int level)
+void RoadBrush::SetLevel(int _level)
 {
-    level = level;
+    level = _level;
 }
 
 TypeOfRoadDirection RoadBrush::GetType()

@@ -27,6 +27,18 @@ public:
 private slots:
     void on_pushButton_StartSim_clicked();
 
+    void on_radioButton_TwoWayRoad_clicked();
+
+    void on_radioButton_OneWayRoad_clicked();
+
+    void on_radioButton_4LineRoad_clicked();
+
+    void on_radioButton_2LineRoad_clicked();
+
+    void on_radioButton_1LineRoad_clicked();
+
+    void on_pushButton_Start_StopSim_clicked();
+
 private:
     Ui::MainWindow *ui;
     GraphicScene* graphicsScene;

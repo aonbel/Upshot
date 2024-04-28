@@ -12,6 +12,22 @@ CarsSpawner::CarsSpawner() :
     timer->start();
 }
 
+CarsSpawner::~CarsSpawner()
+{
+    disconnect(timer, &QTimer::timeout, this, &CarsSpawner::Update);
+
+    for (auto car : *cars)
+    {
+        graphicsScene->removeItem(car->GetCar());
+        delete car;
+    }
+
+    delete paths;
+    delete cars;
+    delete timer;
+    delete rng;
+}
+
 CarsSpawner::CarsSpawner(QVector<Edge> *edges, GraphicScene *graphicsScene) :
     graphicsScene(graphicsScene),
     paths(new QVector<QVector<QPointF>*>),
@@ -100,6 +116,7 @@ void CarsSpawner::Update()
         if (cars->at(iter)->isDone())
         {
             delete cars->at(iter);
+            graphicsScene->removeItem(cars->at(iter)->GetCar());
             cars->erase(std::next(cars->begin(), iter));
             iter = 0;
         }
