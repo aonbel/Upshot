@@ -7,8 +7,6 @@
 #include "graphicscene.h"
 #include "mouseprocesser.h"
 #include "roadcontainer.h"
-#include "carai.h"
-#include "pathservice.h"
 #include "carsspawner.h"
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +33,7 @@ private:
     MouseProcesser* mouseProcesser;
     RoadContainer* roadContainer;
     CarsSpawner* carsSpawner;
+    RoadBrush* brush;
     QTimer* mainTimer;
 };
 #endif // MAINWINDOW_H

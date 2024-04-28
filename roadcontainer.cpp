@@ -6,9 +6,9 @@ RoadContainer::RoadContainer() :
 
 }
 
-void RoadContainer::AddRoad(const QPointF &start, const QPointF &end)
+void RoadContainer::AddRoad(const QPointF &start, const QPointF &end, RoadBrush brush)
 {
-    Road* newRoad = new Road(start, end, nullptr, nullptr, TypeOfRoadDirection::one_way, NumberOfRoadLines::one_lane);
+    Road* newRoad = new Road(start, end, nullptr, nullptr, brush.GetType(), brush.GetNumberOfLines(), brush.GetLevel());
 
     for (auto road : *allRoads)
     {

@@ -25,8 +25,9 @@ enum NumberOfRoadLines
 
 class Road : public RoadPart
 {
-
 private:
+    int level;
+
     QPointF start;
     QPointF end;
 
@@ -38,9 +39,8 @@ private:
 
     QVector<QPointF>* endsOfLines;
     QVector<QPointF>* startsOfLines;
-
 public:
-    Road(const QPointF& start, const QPointF& end, Road* _prev, Road* _next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines);
+    Road(const QPointF& start, const QPointF& end, Road* _prev, Road* _next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines, int level);
     Road(Road& obj);
     Road(Road&& obj) noexcept;
 

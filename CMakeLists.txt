@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(coursework1 VERSION 0.1 LANGUAGES CXX)
+project(upshot VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -38,34 +38,36 @@ set(PROJECT_SOURCES
         carsspawner.cpp
         pathservice.h
         pathservice.cpp
+        roadbrush.h
+        roadbrush.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(coursework1
+    qt_add_executable(upshot
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET coursework1 APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET upshot APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(coursework1 SHARED
+        add_library(upshot SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(coursework1
+        add_executable(upshot
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_link_libraries(coursework1 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(upshot PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
-set_target_properties(coursework1 PROPERTIES
+set_target_properties(upshot PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -73,12 +75,12 @@ set_target_properties(coursework1 PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-install(TARGETS coursework1
+install(TARGETS upshot
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(coursework1)
+    qt_finalize_executable(upshot)
 endif()

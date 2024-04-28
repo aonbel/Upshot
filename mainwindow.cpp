@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , mouseProcesser(new MouseProcesser())
     , roadContainer(new RoadContainer)
     , mainTimer(new QTimer)
+    , brush(new RoadBrush)
 {
     ui->setupUi(this);
 
@@ -16,11 +17,14 @@ MainWindow::MainWindow(QWidget *parent)
     graphicsScene->setSceneRect(0, 0, WINDOW_LENGTH, WINDOW_WIDTH);
 
     connect(graphicsScene, &GraphicScene::mouseEventOccured, mouseProcesser, &MouseProcesser::ProcessEventByDividingIntoSegments);
-    connect(mouseProcesser, &MouseProcesser::AnotherSegmentOccured, roadContainer, &RoadContainer::AddRoad);
+    connect(mouseProcesser, &MouseProcesser::AnotherSegmentOccured, this, [this] (const QPointF& start, const QPointF& end)
+            {
+                roadContainer->AddRoad(start, end, *brush);
+            });
     connect(roadContainer, &RoadContainer::NewRoad, this, [this] (Road* newRoad)
-    {
-        graphicsScene->addItem(newRoad);
-    });
+            {
+                graphicsScene->addItem(newRoad);
+            });
 
 
     mainTimer->setInterval(TICK_TIME);

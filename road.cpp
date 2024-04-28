@@ -1,6 +1,6 @@
 #include "road.h"
 
-Road::Road(const QPointF &start, const QPointF &end, Road *_prev, Road *_next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines) :
+Road::Road(const QPointF &start, const QPointF &end, Road *_prev, Road *_next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines, int level) :
     start(start),
     end(end),
     next(_next),
@@ -8,7 +8,8 @@ Road::Road(const QPointF &start, const QPointF &end, Road *_prev, Road *_next, T
     typeOfDir(typeOfDir),
     numberOfLines(numberOfLines),
     endsOfLines(new QVector<QPointF>),
-    startsOfLines(new QVector<QPointF>)
+    startsOfLines(new QVector<QPointF>),
+    level(level)
 {
     float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
 
@@ -60,7 +61,8 @@ Road::Road(Road &obj) :
     prev(obj.prev),
     numberOfLines(obj.numberOfLines),
     startsOfLines(obj.startsOfLines),
-    endsOfLines(obj.endsOfLines)
+    endsOfLines(obj.endsOfLines),
+    level(obj.level)
 {
 
 }
@@ -73,7 +75,8 @@ Road::Road(Road &&obj) noexcept :
     typeOfDir(obj.typeOfDir),
     numberOfLines(obj.numberOfLines),
     startsOfLines(obj.startsOfLines),
-    endsOfLines(obj.endsOfLines)
+    endsOfLines(obj.endsOfLines),
+    level(obj.level)
 {
 
 }
@@ -109,6 +112,14 @@ void Road::addNextRoad(Road *_next)
     {
         endsOfLines->clear();
         next = _next;
+    }
+
+    if (_next->level != level)
+    {
+        if (!endsOfLines->empty() || !_next->startsOfLines->empty())
+        {
+            return;
+        }
     }
 
     for (auto start : _next->getStartsOfLines())
@@ -148,6 +159,14 @@ void Road::addPrevRoad(Road *_prev)
     {
         startsOfLines->clear();
         prev = _prev;
+    }
+
+    if (_prev->level != level)
+    {
+        if (!startsOfLines->empty() || !_prev->endsOfLines->empty())
+        {
+            return;
+        }
     }
 
     for (auto end : _prev->getEndsOfLines())
