@@ -7,7 +7,7 @@
 #include <QTimer>
 #include <QtCore>
 
-const float MAX_VISIBILITY_LENGTH = 4 * CAR_LENGTH;
+const float MAX_VISIBILITY_LENGTH = 6 * CAR_LENGTH;
 const float MAX_VISIBILITY_WIDTH = 1.5 * CAR_WIDTH;
 const float REACTION_COEFFICIENT = 0.025 * MAX_SPEED;
 const float SUCCESS_EPS = 20;

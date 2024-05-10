@@ -6,7 +6,7 @@
 #include "roadedge.h"
 #include "mouseprocesser.h"
 
-const float SENSITIVITY = DEFAULT_SEGMENT_LENGTH;
+const float SENSITIVITY = 0.7 * DEFAULT_SEGMENT_LENGTH;
 
 class RoadContainer : public QObject
 {
