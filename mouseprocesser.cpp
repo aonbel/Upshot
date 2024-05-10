@@ -8,7 +8,7 @@ void MouseProcesser::ProcessEventByDividingIntoSegments(QGraphicsSceneMouseEvent
 
     if (mouseEvent->type() == QGraphicsSceneMouseEvent::GraphicsSceneMouseMove)
     {
-        float dist = distanceBetweenQPoints(prevPos, mousePos);
+        float dist = vectorLength(prevPos - mousePos);
 
         if (dist > 2 * DEFAULT_SEGMENT_LENGTH)
         {

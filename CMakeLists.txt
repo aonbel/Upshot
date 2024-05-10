@@ -13,33 +13,35 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        road.h
-        road.cpp
-        roadpart.h
-        roadpart.cpp
-        edge.h
-        mymath.h
-        graphicscene.h
-        graphicscene.cpp
-        roadcontainer.h
-        roadcontainer.cpp
-        mouseprocesser.h
-        mouseprocesser.cpp
-        mymath.cpp
         car.h
         car.cpp
         carai.h
         carai.cpp
         carsspawner.h
         carsspawner.cpp
+        graphicscene.h
+        graphicscene.cpp
+        main.cpp
+        mainwindow.cpp
+        mainwindow.h
+        mainwindow.ui
+        mymath.h
+        mouseprocesser.h
+        mouseprocesser.cpp
+        mymath.cpp
         pathservice.h
         pathservice.cpp
+        roadcontainer.h
+        roadcontainer.cpp
         roadbrush.h
         roadbrush.cpp
+        roadpoint.h
+        roadpoint.cpp
+        road.h
+        road.cpp
+        roadedge.h
+        graphicslayer.h
+        graphicslayer.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

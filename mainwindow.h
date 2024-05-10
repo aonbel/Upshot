@@ -25,8 +25,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_StartSim_clicked();
-
     void on_radioButton_TwoWayRoad_clicked();
 
     void on_radioButton_OneWayRoad_clicked();

@@ -2,7 +2,7 @@
 
 CarsSpawner::CarsSpawner() :
     graphicsScene(nullptr),
-    paths(new QVector<QVector<QPointF>*>),
+    paths(new QVector<QVector<RoadPoint>*>),
     cars(new QVector<CarAI*>),
     timer(new QTimer),
     rng(new std::mt19937(time(0)))
@@ -28,19 +28,19 @@ CarsSpawner::~CarsSpawner()
     delete rng;
 }
 
-CarsSpawner::CarsSpawner(QVector<Edge> *edges, GraphicScene *graphicsScene) :
+CarsSpawner::CarsSpawner(QVector<RoadEdge> *edges, GraphicScene *graphicsScene) :
     graphicsScene(graphicsScene),
-    paths(new QVector<QVector<QPointF>*>),
+    paths(new QVector<QVector<RoadPoint>*>),
     cars(new QVector<CarAI*>),
     timer(new QTimer),
     rng(new std::mt19937(time(nullptr)))
 {
-    QVector<QPointF> starts;
-    QVector<QPointF> ends;
+    QVector<RoadPoint> starts;
+    QVector<RoadPoint> ends;
 
     {
-        std::map<QPointF, int> incomingCount;
-        std::map<QPointF, int> outcomingCount;
+        std::map<RoadPoint, int> incomingCount;
+        std::map<RoadPoint, int> outcomingCount;
 
         for (auto edge : *edges)
         {
@@ -89,7 +89,7 @@ CarsSpawner::CarsSpawner(QVector<Edge> *edges, GraphicScene *graphicsScene) :
 
 void CarsSpawner::Update()
 {
-    if ((*rng)() % 5 == 0)
+    if ((*rng)() % CHANCE_OF_SPAWNING_CAR == 0 && cars->size() < MAX_CAR_COUNT)
     {
         auto pos = (*rng)() % paths->size();
 
@@ -97,7 +97,7 @@ void CarsSpawner::Update()
 
         for (auto carAI : *cars)
         {
-            if (isEqual(carAI->GetCarPosition(), paths->at(pos)->at(0), CAR_LENGTH))
+            if (isEqual(carAI->GetCarPosition().pos, paths->at(pos)->at(0).pos, CAR_LENGTH))
             {
                 isCarNear = true;
             }
@@ -115,8 +115,8 @@ void CarsSpawner::Update()
     {
         if (cars->at(iter)->isDone())
         {
-            delete cars->at(iter);
             graphicsScene->removeItem(cars->at(iter)->GetCar());
+            delete cars->at(iter);
             cars->erase(std::next(cars->begin(), iter));
             iter = 0;
         }

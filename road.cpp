@@ -1,34 +1,27 @@
 #include "road.h"
 
-Road::Road(const QPointF &start, const QPointF &end, Road *_prev, Road *_next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines, int level) :
+Road::Road(const RoadPoint &start, const RoadPoint &end, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines, int level) :
     start(start),
     end(end),
-    next(_next),
-    prev(_prev),
+    next(nullptr),
+    prev(nullptr),
     typeOfDir(typeOfDir),
     numberOfLines(numberOfLines),
-    endsOfLinesOnStart(new QVector<QPointF>),
-    startsOfLinesOnStart(new QVector<QPointF>),
-    endsOfLinesOnEnd(new QVector<QPointF>),
-    startsOfLinesOnEnd(new QVector<QPointF>),
-    level(level)
+    endsOfLinesOnStart(new QVector<RoadPoint>),
+    startsOfLinesOnStart(new QVector<RoadPoint>),
+    endsOfLinesOnEnd(new QVector<RoadPoint>),
+    startsOfLinesOnEnd(new QVector<RoadPoint>),
+    levelOnStart(start.level),
+    levelOnEnd(end.level)
 {
     float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
 
     QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
 
-    addNextRoad(next);
-    addPrevRoad(prev);
-
-    if (next != nullptr)
-    {
-        next->addPrevRoad(this);
-    }
-
-    if (prev != nullptr)
-    {
-        prev->addNextRoad(this);
-    }
+    setDefaultEndsOnEnd();
+    setDefaultEndsOnStart();
+    setDefaultStartsOnEnd();
+    setDefaultStartsOnStart();
 }
 
 Road::Road(Road &obj) :
@@ -38,11 +31,12 @@ Road::Road(Road &obj) :
     next(obj.next),
     prev(obj.prev),
     numberOfLines(obj.numberOfLines),
-    endsOfLinesOnStart(new QVector<QPointF>),
-    startsOfLinesOnStart(new QVector<QPointF>),
-    endsOfLinesOnEnd(new QVector<QPointF>),
-    startsOfLinesOnEnd(new QVector<QPointF>),
-    level(obj.level)
+    endsOfLinesOnStart(new QVector<RoadPoint>(*obj.endsOfLinesOnStart)),
+    startsOfLinesOnStart(new QVector<RoadPoint>(*obj.startsOfLinesOnStart)),
+    endsOfLinesOnEnd(new QVector<RoadPoint>(*obj.endsOfLinesOnEnd)),
+    startsOfLinesOnEnd(new QVector<RoadPoint>(*obj.startsOfLinesOnEnd)),
+    levelOnStart(obj.levelOnStart),
+    levelOnEnd(obj.levelOnStart)
 {
 
 }
@@ -54,160 +48,262 @@ Road::Road(Road &&obj) noexcept :
     prev(obj.prev),
     typeOfDir(obj.typeOfDir),
     numberOfLines(obj.numberOfLines),
-    endsOfLinesOnStart(new QVector<QPointF>),
-    startsOfLinesOnStart(new QVector<QPointF>),
-    endsOfLinesOnEnd(new QVector<QPointF>),
-    startsOfLinesOnEnd(new QVector<QPointF>),
-    level(obj.level)
+    endsOfLinesOnStart(obj.endsOfLinesOnStart),
+    startsOfLinesOnStart(obj.startsOfLinesOnStart),
+    endsOfLinesOnEnd(obj.endsOfLinesOnEnd),
+    startsOfLinesOnEnd(obj.startsOfLinesOnEnd),
+    levelOnStart(obj.levelOnStart),
+    levelOnEnd(obj.levelOnStart)
 {
 
 }
 
-void Road::addNextRoad(Road *_next)
+void Road::setDefaultStartsOnStart()
 {
-    if (_next == nullptr)
+    float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
+
+    QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
+
+    startsOfLinesOnStart->clear();
+    startsOfLinesOnStartDef = true;
+
+    QPointF startPos((rotationVector * WIDTH_OF_LINE / 2) * (numberOfLines - 1) + start.pos);
+
+    if (typeOfDir == TypeOfRoadDirection::one_way)
     {
-        if (next != nullptr)
+        for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
         {
-            return;
+            startsOfLinesOnStart->push_back(RoadPoint(startPos, levelOnStart));
+
+            startPos -= WIDTH_OF_LINE * rotationVector;
         }
-
-        endsOfLinesOnEnd->clear();
-        startsOfLinesOnEnd->clear();
-
-        float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
-
-        QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
-
-        QPointF endPos((rotationVector * WIDTH_OF_LINE / 2) * (numberOfLines - 1) + end);
-
-        if (typeOfDir == TypeOfRoadDirection::one_way)
+    }
+    else
+    {
+        for (size_t currLine = 0; currLine < numberOfLines / 2; ++currLine)
         {
-            for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
+            startsOfLinesOnStart->push_back(RoadPoint(startPos, levelOnStart));
+
+            startPos -= WIDTH_OF_LINE * rotationVector;
+        }
+    }
+
+    return;
+}
+
+void Road::setDefaultEndsOnStart()
+{
+    float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
+
+    QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
+    endsOfLinesOnStart->clear();
+    endsOfLinesOnStartDef = true;
+
+    QPointF startPos((rotationVector * WIDTH_OF_LINE / 2) * (numberOfLines - 1) + start.pos);
+
+    if (typeOfDir == TypeOfRoadDirection::two_way)
+    {
+        for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
+        {
+            if (currLine >= numberOfLines / 2)
             {
-                endsOfLinesOnEnd->push_back(endPos);
-
-                endPos -= WIDTH_OF_LINE * rotationVector;
+                endsOfLinesOnStart->push_back(RoadPoint(startPos, levelOnStart));
             }
+
+            startPos -= WIDTH_OF_LINE * rotationVector;
         }
-        else
-        {
-            for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
-            {
-                if (currLine < numberOfLines / 2)
-                {
-                    endsOfLinesOnEnd->push_back(endPos);
-                }
-                else
-                {
-                    startsOfLinesOnEnd->push_back(endPos);
-                }
-
-                endPos -= WIDTH_OF_LINE * rotationVector;
-            }
-        }
-
-        return;
-    }
-
-    if (next == nullptr)
-    {
-        endsOfLinesOnEnd->clear();
-        startsOfLinesOnEnd->clear();
-        next = _next;
-    }
-
-    for (auto start : _next->getStartsOfLinesOnStart())
-    {
-        endsOfLinesOnEnd->push_back(start);
-    }
-
-    for (auto end : _next->getEndsOfLinesOnStart())
-    {
-        startsOfLinesOnEnd->push_back(end);
     }
 }
 
-void Road::addPrevRoad(Road *_prev)
+void Road::setDefaultStartsOnEnd()
 {
-    if (_prev == nullptr)
+    float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
+
+    QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
+    startsOfLinesOnEnd->clear();
+    startsOfLinesOnEndDef = true;
+
+    QPointF endPos((rotationVector * WIDTH_OF_LINE / 2) * (numberOfLines - 1) + end.pos);
+
+    if (typeOfDir == TypeOfRoadDirection::two_way)
     {
-        if (prev != nullptr)
+        for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
         {
-            return;
-        }
-
-        startsOfLinesOnStart->clear();
-        endsOfLinesOnStart->clear();
-
-        float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
-
-        QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
-
-        QPointF startPos((rotationVector * WIDTH_OF_LINE / 2) * (numberOfLines - 1) + start);
-
-        if (typeOfDir == TypeOfRoadDirection::one_way)
-        {
-            for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
+            if (currLine >= numberOfLines / 2)
             {
-                startsOfLinesOnStart->push_back(startPos);
-
-                startPos -= WIDTH_OF_LINE * rotationVector;
+                startsOfLinesOnEnd->push_back(RoadPoint(endPos, levelOnEnd));
             }
+
+            endPos -= WIDTH_OF_LINE * rotationVector;
         }
-        else
+    }
+}
+
+void Road::setDefaultEndsOnEnd()
+{
+    float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
+
+    QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
+    endsOfLinesOnEnd->clear();
+    endsOfLinesOnEndDef = true;
+
+    QPointF endPos((rotationVector * WIDTH_OF_LINE / 2) * (numberOfLines - 1) + end.pos);
+
+    if (typeOfDir == TypeOfRoadDirection::one_way)
+    {
+        for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
         {
-            for (size_t currLine = 0; currLine < numberOfLines; ++currLine)
-            {
-                if (currLine < numberOfLines / 2)
-                {
-                    startsOfLinesOnStart->push_back(startPos);
-                }
-                else
-                {
-                    endsOfLinesOnStart->push_back(startPos);
-                }
+            endsOfLinesOnEnd->push_back(RoadPoint(endPos, levelOnEnd));
 
-                startPos -= WIDTH_OF_LINE * rotationVector;
-            }
+            endPos -= WIDTH_OF_LINE * rotationVector;
         }
+    }
+    else
+    {
+        for (size_t currLine = 0; currLine < numberOfLines / 2; ++currLine)
+        {
+            endsOfLinesOnEnd->push_back(RoadPoint(endPos, levelOnEnd));
 
+            endPos -= WIDTH_OF_LINE * rotationVector;
+        }
+    }
+}
+
+void Road::connectStartToEndOf(Road *road)
+{
+    if (road == nullptr)
+    {
         return;
     }
 
-    if (prev == nullptr)
+    if (startsOfLinesOnStartDef && road->getEndsOfLinesOnEnd().size())
     {
         startsOfLinesOnStart->clear();
-        endsOfLinesOnStart->clear();
-        prev = _prev;
+        startsOfLinesOnStartDef = false;
     }
 
-    for (auto end : _prev->getEndsOfLinesOnEnd())
+    if (endsOfLinesOnStartDef && road->getStartsOfLinesOnEnd().size())
+    {
+        endsOfLinesOnStart->clear();
+        endsOfLinesOnStartDef = false;
+    }
+
+    for (auto end : road->getEndsOfLinesOnEnd())
     {
         startsOfLinesOnStart->push_back(end);
     }
 
-    for (auto start : _prev->getStartsOfLinesOnEnd())
+    for (auto start : road->getStartsOfLinesOnEnd())
     {
         endsOfLinesOnStart->push_back(start);
     }
 }
 
+void Road::connectStartToStartOf(Road *road)
+{
+    if (road == nullptr)
+    {
+        return;
+    }
+
+    if (startsOfLinesOnStartDef && road->getEndsOfLinesOnStart().size())
+    {
+        startsOfLinesOnStart->clear();
+        startsOfLinesOnStartDef = false;
+    }
+
+    if (endsOfLinesOnStartDef && road->getStartsOfLinesOnStart().size())
+    {
+        endsOfLinesOnStart->clear();
+        endsOfLinesOnStartDef = false;
+    }
+
+    for (auto end : road->getEndsOfLinesOnStart())
+    {
+        startsOfLinesOnStart->push_back(end);
+    }
+
+    for (auto start : road->getStartsOfLinesOnStart())
+    {
+        endsOfLinesOnStart->push_back(start);
+    }
+}
+
+void Road::connectEndToEndOf(Road *road)
+{
+    if (road == nullptr)
+    {
+        return;
+    }
+
+    if (startsOfLinesOnEndDef && road->getEndsOfLinesOnEnd().size())
+    {
+        startsOfLinesOnEnd->clear();
+        startsOfLinesOnEndDef = false;
+    }
+
+    if (endsOfLinesOnEndDef && road->getStartsOfLinesOnEnd().size())
+    {
+        endsOfLinesOnEnd->clear();
+        endsOfLinesOnEndDef = false;
+    }
+
+    for (auto end : road->getEndsOfLinesOnEnd())
+    {
+        startsOfLinesOnEnd->push_back(end);
+    }
+
+    for (auto start : road->getStartsOfLinesOnEnd())
+    {
+        endsOfLinesOnEnd->push_back(start);
+    }
+}
+
+void Road::connectEndToStartOf(Road *road)
+{
+    if (road == nullptr)
+    {
+        return;
+    }
+
+    if (startsOfLinesOnEndDef && road->getEndsOfLinesOnStart().size())
+    {
+        startsOfLinesOnEnd->clear();
+        startsOfLinesOnEndDef = false;
+    }
+
+    if (endsOfLinesOnEndDef && road->getStartsOfLinesOnStart().size())
+    {
+        endsOfLinesOnEnd->clear();
+        endsOfLinesOnEndDef = false;
+    }
+
+    for (auto end : road->getEndsOfLinesOnStart())
+    {
+        startsOfLinesOnEnd->push_back(end);
+    }
+
+    for (auto start : road->getStartsOfLinesOnStart())
+    {
+        endsOfLinesOnEnd->push_back(start);
+    }
+}
+
 float Road::GetAngleOfTheRoad() const
 {
-    QPointF direction = end - start;
+    QPointF direction = end.pos - start.pos;
     return qAtan2(direction.y(), direction.x());
 }
 
-QVector<Edge>* Road::GetEdgesForGraph() const
+QVector<RoadEdge>* Road::GetEdgesForGraph() const
 {
-    QVector<Edge>* answer = new QVector<Edge>;
+    QVector<RoadEdge>* answer = new QVector<RoadEdge>;
 
     for (auto start : *startsOfLinesOnStart)
     {
         for (auto end : *endsOfLinesOnEnd)
         {
-            answer->push_back(Edge(start, end));
+            answer->push_back(RoadEdge(start, end));
         }
     }
 
@@ -215,7 +311,7 @@ QVector<Edge>* Road::GetEdgesForGraph() const
     {
         for (auto end : *endsOfLinesOnStart)
         {
-            answer->push_back(Edge(start, end));
+            answer->push_back(RoadEdge(start, end));
         }
     }
 
@@ -239,10 +335,10 @@ void Road::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     {
         QPointF* currPolygon = new QPointF[4];
 
-        currPolygon[0] = edge.startPos + rotationVector * WIDTH_OF_LINE / 2;
-        currPolygon[1] = edge.startPos - rotationVector * WIDTH_OF_LINE / 2;
-        currPolygon[2] = edge.endPos - rotationVector * WIDTH_OF_LINE / 2;
-        currPolygon[3] = edge.endPos + rotationVector * WIDTH_OF_LINE / 2;
+        currPolygon[0] = edge.startPos.pos + rotationVector * WIDTH_OF_LINE / 2;
+        currPolygon[1] = edge.startPos.pos - rotationVector * WIDTH_OF_LINE / 2;
+        currPolygon[2] = edge.endPos.pos - rotationVector * WIDTH_OF_LINE / 2;
+        currPolygon[3] = edge.endPos.pos + rotationVector * WIDTH_OF_LINE / 2;
 
         auto brush = QBrush();
         brush.setColor(Qt::lightGray);
@@ -266,41 +362,41 @@ QRectF Road::boundingRect() const
 
     QPointF rotationVector(qCos(rotatedAngle), qSin(rotatedAngle));
 
-    QPointF firstPnt = start - (rotationVector * WIDTH_OF_LINE / 2);
-    QPointF secondPnt = start + (rotationVector * WIDTH_OF_LINE / 2);
-    QPointF thirdPnt = end - (rotationVector * WIDTH_OF_LINE / 2);
-    QPointF fourthPnt = end + (rotationVector * WIDTH_OF_LINE / 2);
+    QPointF firstPnt = start.pos - (rotationVector * WIDTH_OF_LINE / 2);
+    QPointF secondPnt = start.pos + (rotationVector * WIDTH_OF_LINE / 2);
+    QPointF thirdPnt = end.pos - (rotationVector * WIDTH_OF_LINE / 2);
+    QPointF fourthPnt = end.pos + (rotationVector * WIDTH_OF_LINE / 2);
 
     return QRectF(QPointF(std::min({firstPnt.x(), secondPnt.x(), thirdPnt.x(), fourthPnt.x()}), std::min({firstPnt.y(), secondPnt.y(), thirdPnt.y(), fourthPnt.y()})),
                   QPointF(std::max({firstPnt.x(), secondPnt.x(), thirdPnt.x(), fourthPnt.x()}), std::max({firstPnt.y(), secondPnt.y(), thirdPnt.y(), fourthPnt.y()})));
 }
 
-QVector<QPointF> Road::getEndsOfLinesOnStart()
+QVector<RoadPoint> Road::getEndsOfLinesOnStart() const
 {
     return *endsOfLinesOnStart;
 }
 
-QVector<QPointF> Road::getStartsOfLinesOnStart()
+QVector<RoadPoint> Road::getStartsOfLinesOnStart() const
 {
     return *startsOfLinesOnStart;
 }
 
-QVector<QPointF> Road::getEndsOfLinesOnEnd()
+QVector<RoadPoint> Road::getEndsOfLinesOnEnd() const
 {
     return *endsOfLinesOnEnd;
 }
 
-QVector<QPointF> Road::getStartsOfLinesOnEnd()
+QVector<RoadPoint> Road::getStartsOfLinesOnEnd() const
 {
     return *startsOfLinesOnEnd;
 }
 
-QPointF Road::GetStart() const
+RoadPoint Road::GetStart() const
 {
     return start;
 }
 
-QPointF Road::GetEnd() const
+RoadPoint Road::GetEnd() const
 {
     return end;
 }

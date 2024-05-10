@@ -1,14 +1,14 @@
 #ifndef ROAD_H
 #define ROAD_H
 
-#include <QtCore>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
-#include <QtMath>
+#include <QPainter>
 
-#include "edge.h"
-#include "roadpart.h"
+#include "roadedge.h"
 #include "mymath.h"
+
+const float WIDTH_OF_LINE = 20;
 
 enum TypeOfRoadDirection
 {
@@ -23,13 +23,14 @@ enum NumberOfRoadLines
     four_lanes = 4
 };
 
-class Road : public RoadPart
+class Road : public QGraphicsItem
 {
 private:
-    int level;
+    int levelOnStart;
+    int levelOnEnd;
 
-    QPointF start;
-    QPointF end;
+    RoadPoint start;
+    RoadPoint end;
 
     Road* prev;
     Road* next;
@@ -37,33 +38,49 @@ private:
     TypeOfRoadDirection typeOfDir;
     NumberOfRoadLines numberOfLines;
 
-    QVector<QPointF>* endsOfLinesOnStart;
-    QVector<QPointF>* startsOfLinesOnStart;
+    QVector<RoadPoint>* endsOfLinesOnStart;
+    bool endsOfLinesOnStartDef;
+    QVector<RoadPoint>* startsOfLinesOnStart;
+    bool startsOfLinesOnStartDef;
 
-    QVector<QPointF>* endsOfLinesOnEnd;
-    QVector<QPointF>* startsOfLinesOnEnd;
+    QVector<RoadPoint>* endsOfLinesOnEnd;
+    bool endsOfLinesOnEndDef;
+    QVector<RoadPoint>* startsOfLinesOnEnd;
+    bool startsOfLinesOnEndDef;
 
 public:
-    Road(const QPointF& start, const QPointF& end, Road* _prev, Road* _next, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines, int level);
+    Road(const RoadPoint& start, const RoadPoint& end, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines, int level);
     Road(Road& obj);
     Road(Road&& obj) noexcept;
+
+    void setDefaultStartsOnStart();
+    void setDefaultEndsOnStart();
+    void setDefaultStartsOnEnd();
+    void setDefaultEndsOnEnd();
 
     void addNextRoad(Road *_next);
     void addPrevRoad(Road *_prev);
 
+    void connectStartToEndOf(Road *road);
+    void connectStartToStartOf(Road *road);
+    void connectEndToEndOf(Road *road);
+    void connectEndToStartOf(Road *road);
+
     float GetAngleOfTheRoad() const;
-    QVector<Edge>* GetEdgesForGraph() const override;
+
+    QVector<RoadEdge>* GetEdgesForGraph() const;
+
+    QVector<RoadPoint> getEndsOfLinesOnStart() const;
+    QVector<RoadPoint> getStartsOfLinesOnStart() const;
+
+    QVector<RoadPoint> getEndsOfLinesOnEnd() const;
+    QVector<RoadPoint> getStartsOfLinesOnEnd() const;
+
+    RoadPoint GetStart() const;
+    RoadPoint GetEnd() const;
+
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
-
-    QVector<QPointF> getEndsOfLinesOnStart();
-    QVector<QPointF> getStartsOfLinesOnStart();
-
-    QVector<QPointF> getEndsOfLinesOnEnd();
-    QVector<QPointF> getStartsOfLinesOnEnd();
-
-    QPointF GetStart() const;
-    QPointF GetEnd() const;
 };
 
 #endif // ROAD_H

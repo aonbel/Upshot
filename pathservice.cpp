@@ -2,22 +2,22 @@
 
 PathService::PathService() = default;
 
-std::map<QPointF, QVector<QPointF>* >* PathService::FromEdgesToAdjMatrix(QVector<Edge> *edges)
+std::map<RoadPoint, QVector<RoadPoint>* >* PathService::FromEdgesToAdjMatrix(QVector<RoadEdge> *edges)
 {
-    std::map<QPointF, QVector<QPointF>*>* adjMatrix = new std::map<QPointF, QVector<QPointF>* >;
-    std::map<QPointF, bool> been;
+    std::map<RoadPoint, QVector<RoadPoint>*>* adjMatrix = new std::map<RoadPoint, QVector<RoadPoint>* >;
+    std::map<RoadPoint, bool> been;
 
     for (auto edge : *edges)
     {
         if (!been[edge.startPos])
         {
-            (*adjMatrix)[edge.startPos] = new QVector<QPointF>;
+            (*adjMatrix)[edge.startPos] = new QVector<RoadPoint>;
             been[edge.startPos] = true;
         }
 
         if (!been[edge.endPos])
         {
-            (*adjMatrix)[edge.endPos] = new QVector<QPointF>;
+            (*adjMatrix)[edge.endPos] = new QVector<RoadPoint>;
             been[edge.endPos] = true;
         }
 
@@ -27,20 +27,20 @@ std::map<QPointF, QVector<QPointF>* >* PathService::FromEdgesToAdjMatrix(QVector
     return adjMatrix;
 }
 
-QVector<QPointF> *PathService::FindPath(std::map<QPointF, QVector<QPointF> *> *adjMatrix, QPointF start, QPointF end)
+QVector<RoadPoint> *PathService::FindPath(std::map<RoadPoint, QVector<RoadPoint> *> *adjMatrix, RoadPoint start, RoadPoint end)
 {
-    std::map<QPointF, float> dist;
-    std::map<QPointF, QPointF> prev;
-    std::map<QPointF, bool> been;
+    std::map<RoadPoint, float> dist;
+    std::map<RoadPoint, RoadPoint> prev;
+    std::map<RoadPoint, bool> been;
 
     for (auto vertex : *adjMatrix)
     {
         dist[vertex.first] = FLOAT_MAX_VALUE;
-        prev[vertex.first] = DEF_QPOINTF;
+        prev[vertex.first] = RoadPoint();
     }
 
     dist[start] = 0;
-    std::queue<QPointF> queue;
+    std::queue<RoadPoint> queue;
     queue.push(start);
 
     while (!queue.empty())
@@ -69,11 +69,11 @@ QVector<QPointF> *PathService::FindPath(std::map<QPointF, QVector<QPointF> *> *a
         return nullptr;
     }
 
-    QVector<QPointF>* path = new QVector<QPointF>;
+    QVector<RoadPoint>* path = new QVector<RoadPoint>;
 
-    QPointF curr = end;
+    RoadPoint curr = end;
 
-    while (curr != DEF_QPOINTF)
+    while (curr != RoadPoint())
     {
         path->push_back(curr);
         curr = prev[curr];

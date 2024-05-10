@@ -1,11 +1,5 @@
 #include "mymath.h"
 
-float distanceBetweenQPoints(QPointF first, QPointF second)
-{
-    QPointF diff = first - second;
-    return qSqrt(qPow(diff.x(), 2) + qPow(diff.y(), 2));
-}
-
 bool isEqual(float first, float second, float eps)
 {
     return qAbs(first - second) <= eps;
@@ -13,25 +7,22 @@ bool isEqual(float first, float second, float eps)
 
 bool isEqual(QPointF first, QPointF second, float eps)
 {
-    auto dist = distanceBetweenQPoints(first, second);
+    auto dist = vectorLength(first - second);
     return (dist < eps);
 }
 
-float angleBetweenEdges(Edge first, Edge second)
+float angleBetweenVectors(QPointF first, QPointF second)
 {
-    QPointF firstVector(first.endPos - first.startPos);
-    QPointF secondVector(second.endPos - second.startPos);
+    auto angleDelta = vectorAngle(first) - vectorAngle(second);
 
-    auto angleDelta = vectorAngle(secondVector) - vectorAngle(firstVector);
-
-    if (angleDelta > PI)
+    if (angleDelta >= PI)
     {
-        angleDelta -= 2 * PI;
+        angleDelta -= 2*PI;
     }
 
-    if (angleDelta < -PI)
+    if (angleDelta <= -PI)
     {
-        angleDelta += 2 * PI;
+        angleDelta += 2*PI;
     }
 
     return angleDelta;

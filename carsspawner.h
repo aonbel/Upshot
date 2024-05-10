@@ -6,18 +6,21 @@
 #include "mymath.h"
 #include "pathservice.h"
 
+const int CHANCE_OF_SPAWNING_CAR = 7;
+const int MAX_CAR_COUNT = 100;
+
 class CarsSpawner : public QObject
 {
     Q_OBJECT
     GraphicScene* graphicsScene;
     QVector<CarAI*>* cars;
-    QVector<QVector<QPointF>*>* paths;
+    QVector<QVector<RoadPoint>*>* paths;
     QTimer* timer;
     std::mt19937* rng;
 public:
     CarsSpawner();
     ~CarsSpawner() override;
-    CarsSpawner(QVector<Edge>* edges, GraphicScene* graphicsScene);
+    CarsSpawner(QVector<RoadEdge>* edges, GraphicScene* graphicsScene);
     void Update();
 };
 

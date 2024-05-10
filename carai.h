@@ -7,28 +7,28 @@
 #include <QTimer>
 #include <QtCore>
 
-const float MAX_VISIBILITY_LENGTH = CAR_LENGTH;
-const float MAX_VISIBILITY_WIDTH = 3 * CAR_LENGTH;
-const float REACTION_COEFFICIENT = 0.3;
-const float SUCCESS_EPS = 10;
-const float STOP_POINT = 0.05 * CAR_LENGTH;
+const float MAX_VISIBILITY_LENGTH = 4 * CAR_LENGTH;
+const float MAX_VISIBILITY_WIDTH = 1.5 * CAR_WIDTH;
+const float REACTION_COEFFICIENT = 0.025 * MAX_SPEED;
+const float SUCCESS_EPS = 20;
+const float STOP_POINT = 2 * CAR_LENGTH;
 
 class CarAI : public QObject
 {
     Q_OBJECT
 private:
     Car* car;
-    QVector<QPointF>* path;
+    QVector<RoadPoint>* path;
     int currPoint;
     QTimer* timer;
     QVector<CarAI*>* carAIs;
     bool processDone;
 public:
     CarAI();
-    CarAI(QVector<QPointF>* path, QVector<CarAI*>* carAIs);
+    CarAI(QVector<RoadPoint>* path, QVector<CarAI*>* carAIs);
     void Update();
     bool isDone();
-    QPointF GetCarPosition();
+    RoadPoint GetCarPosition();
     Car* GetCar();
 };
 

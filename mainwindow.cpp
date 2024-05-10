@@ -23,16 +23,18 @@ MainWindow::MainWindow(QWidget *parent)
             });
     connect(roadContainer, &RoadContainer::NewRoad, this, [this] (Road* newRoad)
             {
-                auto edges = newRoad->GetEdgesForGraph();
-
                 graphicsScene->addItem(newRoad);
+
+                /*
+                auto edges = newRoad->GetEdgesForGraph();
 
                 for (auto edge : *edges)
                 {
-                    graphicsScene->addLine(QLineF(edge.startPos, edge.endPos), QPen(Qt::green, 1));
+                    graphicsScene->addLine(QLineF(edge.startPos.pos, edge.endPos.pos), QPen(Qt::green, 1));
                 }
 
                 delete edges;
+                */
             });
 
 

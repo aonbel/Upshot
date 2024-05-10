@@ -2,8 +2,8 @@
 
 CarAI::CarAI() = default;
 
-CarAI::CarAI(QVector<QPointF> *path, QVector<CarAI*>* carAIs) :
-    car(new Car((*path)[0], 0)),
+CarAI::CarAI(QVector<RoadPoint> *path, QVector<CarAI*>* carAIs) :
+    car(new Car((*path)[0], vectorAngle((*path)[1].pos - (*path)[0].pos))),
     path(path),
     timer(new QTimer),
     currPoint(1),
@@ -19,39 +19,27 @@ CarAI::CarAI(QVector<QPointF> *path, QVector<CarAI*>* carAIs) :
 
 void CarAI::Update()
 {
-    while (isEqual(car->GetPosition(), (*path)[currPoint], SUCCESS_EPS))
+    while (isEqual(car->GetPosition().pos, (*path)[currPoint].pos, SUCCESS_EPS))
     {
         currPoint++;
 
         if (currPoint == path->size())
         {
-            delete car;
             processDone = true;
             disconnect(timer, &QTimer::timeout, this, &CarAI::Update);
             return;
         }
     }
 
-    auto angleDelta = vectorAngle((*path)[currPoint] - car->GetPosition()) - car->GetAngle();
+    QPointF position = car->GetPosition().pos;
+    float angle = car->GetAngle();
+    QPointF rotatedVector = rotateVector(QPointF(1, 0), angle);
 
-    if (qAbs(angleDelta + 2 * PI) < qAbs(angleDelta))
-    {
-        angleDelta = angleDelta + 2 * PI;
-    }
-
-    if (qAbs(angleDelta - 2 * PI) < qAbs(angleDelta))
-    {
-        angleDelta = angleDelta - 2 * PI;
-    }
+    auto angleDelta = angleBetweenVectors((*path)[currPoint].pos - position, rotatedVector);
 
     car->Rotate(angleDelta * REACTION_COEFFICIENT);
 
-    QPointF position = car->GetPosition();
-    float angle = car->GetAngle();
     angleDelta = qAbs(angleDelta);
-
-    QPointF rotatedVector = rotateVector(QPointF(1, 0), angle);
-
     float angleCoef = rotatedVector.y() / rotatedVector.x();
     float offset = position.y() - angleCoef * position.x();
     float distanceToNearestCar = MAX_VISIBILITY_LENGTH;
@@ -63,33 +51,28 @@ void CarAI::Update()
             continue;
         }
 
-        auto currPos = carAI->GetCarPosition();
+        auto currPos = carAI->GetCar()->PredictPosition().pos;
 
-        if (scalarMultiplicationVectors(rotatedVector, currPos - position) <= 0)
+        if (scalarMultiplicationVectors(currPos - position, rotatedVector) < 0)
         {
             continue;
         }
 
         float currOffset = currPos.y() - angleCoef * currPos.x();
-        float dist = currOffset - offset;
+        float dist = qAbs(qSin(angle - PI / 2) * (currOffset - offset));
 
-        if (qAbs(dist) < MAX_VISIBILITY_LENGTH)
+        if (dist < MAX_VISIBILITY_WIDTH)
         {
-            float projectionLength = qSqrt(qPow(distanceBetweenQPoints(position, currPos), 2) - qPow(dist, 2));
+            float projectionLength = qSqrt(qPow(vectorLength(position - currPos), 2) - qPow(dist, 2));
 
-            distanceToNearestCar = std::min(distanceToNearestCar, projectionLength);
+            if (distanceToNearestCar > projectionLength)
+            {
+                distanceToNearestCar = projectionLength;
+            }
         }
     }
 
-
-    if (distanceToNearestCar == MAX_VISIBILITY_LENGTH)
-    {
-        car->Accelerate(MAX_SPEED * PI / angleDelta);
-    }
-    else
-    {
-        car->Accelerate(STOP_POINT - MAX_SPEED * MAX_VISIBILITY_LENGTH / distanceToNearestCar);
-    }
+    car->setVelocity(MAX_SPEED * ((distanceToNearestCar - STOP_POINT) / MAX_VISIBILITY_LENGTH) * ((PI - angleDelta) / PI));
 }
 
 bool CarAI::isDone()
@@ -97,7 +80,7 @@ bool CarAI::isDone()
     return processDone;
 }
 
-QPointF CarAI::GetCarPosition()
+RoadPoint CarAI::GetCarPosition()
 {
     return car->GetPosition();
 }

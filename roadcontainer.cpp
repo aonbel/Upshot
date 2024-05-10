@@ -6,23 +6,30 @@ RoadContainer::RoadContainer() :
 
 }
 
-void RoadContainer::AddRoad(const QPointF &start, const QPointF &end, RoadBrush brush)
+void RoadContainer::AddRoad(const QPointF &start, const QPointF &end, RoadBrush brushOnStart, RoadBrush brushOnEnd)
 {
-    Road* newRoad = new Road(start, end, nullptr, nullptr, brush.GetType(), brush.GetNumberOfLines(), brush.GetLevel());
+    Road* newRoad = new Road(RoadPoint(start, brushOnStart.GetLevel()), RoadPoint(end, brushOnEnd.GetLevel()), brushOnStart.GetType(), brushOnStart.GetNumberOfLines(), brushOnStart.GetLevel());
 
     for (auto road : *allRoads)
     {
-        if (isEqual(road->GetEnd(), start, SENSITIVITY))
+        if (isEqual(road->GetStart().pos, start, SENSITIVITY))
         {
-            newRoad->addPrevRoad(road);
+            newRoad->connectStartToStartOf(road);
         }
-    }
 
-    for (auto road : *allRoads)
-    {
-        if (isEqual(road->GetStart(), end, SENSITIVITY))
+        if (isEqual(road->GetStart().pos, end, SENSITIVITY))
         {
-            newRoad->addNextRoad(road);
+            newRoad->connectEndToStartOf(road);
+        }
+
+        if (isEqual(road->GetEnd().pos, start, SENSITIVITY))
+        {
+            newRoad->connectStartToEndOf(road);
+        }
+
+        if (isEqual(road->GetEnd().pos, end, SENSITIVITY))
+        {
+            newRoad->connectEndToEndOf(road);
         }
     }
 
@@ -31,13 +38,13 @@ void RoadContainer::AddRoad(const QPointF &start, const QPointF &end, RoadBrush 
     emit NewRoad(newRoad);
 }
 
-QVector<Edge> *RoadContainer::GetGraph() const
+QVector<RoadEdge> *RoadContainer::GetGraph() const
 {
-    QVector<Edge>* answer = new QVector<Edge>;
+    QVector<RoadEdge>* answer = new QVector<RoadEdge>;
 
     for (size_t partIter = 0;partIter<allRoads->count();++partIter)
     {
-        QVector<Edge>* edges = allRoads->at(partIter)->GetEdgesForGraph();
+        QVector<RoadEdge>* edges = allRoads->at(partIter)->GetEdgesForGraph();
 
         for (size_t edgeIter = 0;edgeIter<edges->count();++edgeIter)
         {

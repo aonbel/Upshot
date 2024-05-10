@@ -3,8 +3,10 @@
 
 #include "road.h"
 #include "roadbrush.h"
+#include "roadedge.h"
+#include "mouseprocesser.h"
 
-const float SENSITIVITY = 30;
+const float SENSITIVITY = DEFAULT_SEGMENT_LENGTH;
 
 class RoadContainer : public QObject
 {
@@ -13,8 +15,8 @@ private:
     QVector<Road*>* allRoads;
 public:
     RoadContainer();
-    void AddRoad(const QPointF& start, const QPointF& end, RoadBrush brush = RoadBrush());
-    QVector<Edge>* GetGraph() const;
+    void AddRoad(const QPointF &start, const QPointF &end, RoadBrush brushOnStart = RoadBrush(), RoadBrush brushOnEnd = RoadBrush());
+    QVector<RoadEdge>* GetGraph() const;
 signals:
     void NewRoad(Road* road);
 };
