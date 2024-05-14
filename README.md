@@ -8,7 +8,7 @@
 
 You can draw needed roads on the canva and then press Start
 
-![изображение](https://github.com/aonbel/Upshot/assets/62477629/202b464f-848c-41de-bcc7-001bb4944f0d)
+![изображение](https://github.com/aonbel/Upshot/assets/62477629/40116832-9f4a-49e1-9dbf-0952fc801e98)
 
 ## Show your support
 
