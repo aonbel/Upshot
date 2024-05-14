@@ -23,6 +23,8 @@ enum NumberOfRoadLines
     four_lanes = 4
 };
 
+const std::array<QColor, 4> roadLevelColors({ Qt::black, Qt::darkGray, Qt::gray, Qt::lightGray });
+
 class Road : public QGraphicsItem
 {
 private:
@@ -78,6 +80,7 @@ public:
 
     RoadPoint GetStart() const;
     RoadPoint GetEnd() const;
+    int GetLevel() const;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;

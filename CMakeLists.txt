@@ -26,8 +26,8 @@ set(PROJECT_SOURCES
         mainwindow.h
         mainwindow.ui
         mymath.h
-        mouseprocesser.h
-        mouseprocesser.cpp
+        inputprocesser.h
+        inputprocesser.cpp
         mymath.cpp
         pathservice.h
         pathservice.cpp

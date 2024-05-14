@@ -8,8 +8,8 @@ class GraphicsLayer : public QGraphicsItem
 public:
     GraphicsLayer();
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override = 0;
-    QRectF boundingRect() const override = 0;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
 };
 
 #endif // GRAPHICSLAYER_H

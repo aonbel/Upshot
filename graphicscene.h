@@ -15,11 +15,16 @@ class GraphicScene : public QGraphicsScene
 public:
     GraphicScene();
     explicit GraphicScene(int _numberOfLayers);
-    void AddItemOnLayer(QGraphicsItem* item, int layer);
+    void setItemLayer(QGraphicsItem* item, int layer);
+    void removeItemFromLayers(QGraphicsItem* item);
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
+    void wheelEvent(QGraphicsSceneWheelEvent *wheelEvent) override;
+    void keyPressEvent(QKeyEvent* keyEvent) override;
 signals:
     void mouseEventOccured(QGraphicsSceneMouseEvent *mouseEvent);
+    void wheelEventOccured(QGraphicsSceneWheelEvent *wheelEvent);
+    void keyPressEventOccured(QKeyEvent* keyEvent);
 };
 
 #endif // GRAPHICSCENE_H

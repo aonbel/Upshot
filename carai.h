@@ -21,15 +21,16 @@ private:
     QVector<RoadPoint>* path;
     int currPoint;
     QTimer* timer;
-    QVector<CarAI*>* carAIs;
+    const QVector<CarAI>& carAIs;
     bool processDone;
 public:
-    CarAI();
-    CarAI(QVector<RoadPoint>* path, QVector<CarAI*>* carAIs);
+    CarAI(const CarAI& other);
+    CarAI(CarAI&& other) noexcept;
+    CarAI(QVector<RoadPoint>* path, const QVector<CarAI>& carAIs);
     void Update();
-    bool isDone();
-    RoadPoint GetCarPosition();
-    Car* GetCar();
+    void ForceStop();
+    bool isDone() const;
+    Car* GetCar() const;
 };
 
 #endif // CARAI_H

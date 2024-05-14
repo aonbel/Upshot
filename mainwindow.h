@@ -5,7 +5,7 @@
 #include <QGraphicsView>
 
 #include "graphicscene.h"
-#include "mouseprocesser.h"
+#include "inputprocesser.h"
 #include "roadcontainer.h"
 #include "carsspawner.h"
 
@@ -37,10 +37,12 @@ private slots:
 
     void on_pushButton_Start_StopSim_clicked();
 
+    void on_pushButton_Clear_clicked();
+
 private:
     Ui::MainWindow *ui;
     GraphicScene* graphicsScene;
-    MouseProcesser* mouseProcesser;
+    InputProcesser* inputProcesser;
     RoadContainer* roadContainer;
     CarsSpawner* carsSpawner;
     RoadBrush* brush;

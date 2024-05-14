@@ -15,14 +15,12 @@ float angleBetweenVectors(QPointF first, QPointF second)
 {
     auto angleDelta = vectorAngle(first) - vectorAngle(second);
 
-    if (angleDelta >= PI)
-    {
-        angleDelta -= 2*PI;
+    if (angleDelta >= PI) {
+        angleDelta -= 2 * PI;
     }
 
-    if (angleDelta <= -PI)
-    {
-        angleDelta += 2*PI;
+    if (angleDelta <= -PI) {
+        angleDelta += 2 * PI;
     }
 
     return angleDelta;
@@ -42,7 +40,8 @@ float vectorAngle(QPointF vector)
 
 QPointF rotateVector(QPointF vector, float angle)
 {
-    return {vector.x() * qCos(angle) - vector.y() * qSin(angle), vector.x() * qSin(angle) + vector.y() * qCos(angle)};
+    return {vector.x() * qCos(angle) - vector.y() * qSin(angle),
+            vector.x() * qSin(angle) + vector.y() * qCos(angle)};
 }
 
 float scalarMultiplicationVectors(QPointF first, QPointF second)

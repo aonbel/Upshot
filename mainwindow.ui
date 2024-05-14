@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1097</width>
-    <height>825</height>
+    <width>1200</width>
+    <height>850</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1097</width>
-    <height>825</height>
+    <width>1200</width>
+    <height>850</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1097</width>
-    <height>825</height>
+    <width>1200</width>
+    <height>850</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -35,10 +35,10 @@
    <widget class="QGraphicsView" name="mainScene">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>941</width>
-      <height>781</height>
+      <x>10</x>
+      <y>10</y>
+      <width>1000</width>
+      <height>800</height>
      </rect>
     </property>
     <property name="font">
@@ -46,30 +46,79 @@
       <family>URW Bookman [urw]</family>
      </font>
     </property>
+    <property name="sceneRect">
+     <rectf>
+      <x>0.000000000000000</x>
+      <y>0.000000000000000</y>
+      <width>990.000000000000000</width>
+      <height>790.000000000000000</height>
+     </rectf>
+    </property>
+    <property name="viewportUpdateMode">
+     <enum>QGraphicsView::FullViewportUpdate</enum>
+    </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_Start_StopSim">
+   <widget class="QWidget" name="verticalLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>970</x>
-      <y>770</y>
-      <width>111</width>
-      <height>25</height>
+      <x>1020</x>
+      <y>300</y>
+      <width>171</width>
+      <height>111</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Start/Stop</string>
-    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_Menu">
+     <item>
+      <widget class="QPushButton" name="pushButton_Start_StopSim">
+       <property name="text">
+        <string>Start/Stop</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Clear">
+       <property name="text">
+        <string>Clear</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
-   <widget class="QWidget" name="verticalLayoutWidget">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>970</x>
-      <y>20</y>
-      <width>121</width>
-      <height>83</height>
+      <x>1020</x>
+      <y>10</y>
+      <width>169</width>
+      <height>106</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="LayoutWithNumberOfRoadLines">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <item>
+      <widget class="QLabel" name="label_UserInfo_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Number of lines</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::PlainText</enum>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QRadioButton" name="radioButton_1LineRoad">
        <property name="enabled">
@@ -105,16 +154,38 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="verticalLayoutWidget_2">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>970</x>
+      <x>1020</x>
       <y>120</y>
-      <width>121</width>
-      <height>81</height>
+      <width>169</width>
+      <height>126</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="LayoutWithRoadTypes">
+     <item>
+      <widget class="QLabel" name="label_UserInfo_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Type of road</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::PlainText</enum>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QRadioButton" name="radioButton_OneWayRoad">
        <property name="enabled">
@@ -135,6 +206,44 @@
        </property>
        <property name="text">
         <string>Two-way road</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>250</y>
+      <width>169</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_LevelInfo">
+     <item>
+      <widget class="QLabel" name="label_UserInfo">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Level :</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_CurrentLevel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>

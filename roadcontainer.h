@@ -4,7 +4,7 @@
 #include "road.h"
 #include "roadbrush.h"
 #include "roadedge.h"
-#include "mouseprocesser.h"
+#include "inputprocesser.h"
 
 const float SENSITIVITY = 0.7 * DEFAULT_SEGMENT_LENGTH;
 
@@ -15,10 +15,12 @@ private:
     QVector<Road*>* allRoads;
 public:
     RoadContainer();
+    void Clear();
     void AddRoad(const QPointF &start, const QPointF &end, RoadBrush brushOnStart = RoadBrush(), RoadBrush brushOnEnd = RoadBrush());
     QVector<RoadEdge>* GetGraph() const;
 signals:
     void NewRoad(Road* road);
+    void RemoveRoad(Road* road);
 };
 
 #endif // ROADCONTAINER_H

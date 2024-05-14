@@ -1,19 +1,46 @@
 #include "car.h"
 
-Car::Car(RoadPoint pos, float angle) :
-    pos(pos),
-    angle(angle),
-    velocity(0),
-    timer(new QTimer)
+Car::Car(const Car &other)
+    : pos(other.pos)
+    , angle(other.angle)
+    , velocity(other.velocity)
+    , timer(new QTimer)
+{
+    connect(timer, &QTimer::timeout, this, &Car::Update);
+}
+
+Car::Car(Car &&other) noexcept
+    : pos(other.pos)
+    , angle(other.angle)
+    , velocity(other.velocity)
+    , timer(other.timer)
+{
+    connect(timer, &QTimer::timeout, this, &Car::Update);
+}
+
+Car::Car(RoadPoint pos, float angle)
+    : pos(pos)
+    , angle(angle)
+    , velocity(0)
+    , timer(new QTimer)
 {
     timer->setInterval(TICK_TIME);
     connect(timer, &QTimer::timeout, this, &Car::Update);
 
-    QRandomGenerator rng(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+    QRandomGenerator rng(std::chrono::duration_cast<std::chrono::milliseconds>(
+                             std::chrono::system_clock::now().time_since_epoch())
+                             .count());
 
-    color = colors[rng()%4];
+    color = colors[rng() % 4];
 
     timer->start();
+}
+
+Car::~Car()
+{
+    disconnect(timer, &QTimer::timeout, this, &Car::Update);
+    delete timer;
+    timer = nullptr;
 }
 
 void Car::Rotate(float delta)
@@ -23,17 +50,21 @@ void Car::Rotate(float delta)
 
 void Car::setVelocity(float newVelocity)
 {
-    if (newVelocity < 0)
-    {
+    if (newVelocity < 0) {
         velocity = 0;
-    }
-    else if (newVelocity > MAX_SPEED)
-    {
+    } else if (newVelocity > MAX_SPEED) {
         velocity = MAX_SPEED;
-    }
-    else
-    {
+    } else {
         velocity = newVelocity;
+    }
+}
+
+void Car::setLevel(int newLevel)
+{
+    if (newLevel != pos.level)
+    {
+        pos.level = newLevel;
+        needToUpdateLevelOfCar(this);
     }
 }
 
@@ -43,12 +74,12 @@ void Car::Update()
     pos.pos.setY(pos.pos.y() + velocity * qSin(angle));
 }
 
-RoadPoint Car::GetPosition()
+RoadPoint Car::GetPosition() const
 {
     return pos;
 }
 
-RoadPoint Car::PredictPosition()
+RoadPoint Car::PredictPosition() const
 {
     RoadPoint prediction = pos;
     prediction.pos.setX(prediction.pos.x() + velocity * qCos(angle));
@@ -56,12 +87,12 @@ RoadPoint Car::PredictPosition()
     return prediction;
 }
 
-float Car::GetAngle()
+float Car::GetAngle() const
 {
     return angle;
 }
 
-float Car::GetVelocity()
+float Car::GetVelocity() const
 {
     return velocity;
 }
@@ -90,11 +121,17 @@ void Car::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidg
 
 QRectF Car::boundingRect() const
 {
-    auto point1 = QPointF(pos.pos.x() + CAR_LENGTH * qCos(angle), pos.pos.y() + CAR_WIDTH * qSin(angle));
-    auto point2 = QPointF(pos.pos.x() + CAR_LENGTH * qCos(angle), pos.pos.y() - CAR_WIDTH * qSin(angle));
-    auto point3 = QPointF(pos.pos.x() - CAR_LENGTH * qCos(angle), pos.pos.y() + CAR_WIDTH * qSin(angle));
-    auto point4 = QPointF(pos.pos.x() - CAR_LENGTH * qCos(angle), pos.pos.y() - CAR_WIDTH * qSin(angle));
+    auto point1 = QPointF(pos.pos.x() + CAR_LENGTH * qCos(angle),
+                          pos.pos.y() + CAR_WIDTH * qSin(angle));
+    auto point2 = QPointF(pos.pos.x() + CAR_LENGTH * qCos(angle),
+                          pos.pos.y() - CAR_WIDTH * qSin(angle));
+    auto point3 = QPointF(pos.pos.x() - CAR_LENGTH * qCos(angle),
+                          pos.pos.y() + CAR_WIDTH * qSin(angle));
+    auto point4 = QPointF(pos.pos.x() - CAR_LENGTH * qCos(angle),
+                          pos.pos.y() - CAR_WIDTH * qSin(angle));
 
-    return QRectF(QPointF(std::min({ point1.x(), point2.x(), point3.x(), point4.x()}), std::min({ point1.y(), point2.y(), point3.y(), point4.y()})),
-                  QPointF(std::max({ point1.x(), point2.x(), point3.x(), point4.x()}), std::max({ point1.y(), point2.y(), point3.y(), point4.y()})));
+    return QRectF(QPointF(std::min({point1.x(), point2.x(), point3.x(), point4.x()}),
+                          std::min({point1.y(), point2.y(), point3.y(), point4.y()})),
+                  QPointF(std::max({point1.x(), point2.x(), point3.x(), point4.x()}),
+                          std::max({point1.y(), point2.y(), point3.y(), point4.y()})));
 }

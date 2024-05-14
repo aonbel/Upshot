@@ -1,8 +1,32 @@
 #include "carai.h"
 
-CarAI::CarAI() = default;
+CarAI::CarAI(const CarAI &other) :
+    car(other.car),
+    path(other.path),
+    timer(new QTimer),
+    currPoint(other.currPoint),
+    carAIs(other.carAIs),
+    processDone(other.processDone)
+{
+    timer->setInterval(TICK_TIME);
 
-CarAI::CarAI(QVector<RoadPoint> *path, QVector<CarAI*>* carAIs) :
+    connect(timer, &QTimer::timeout, this, &CarAI::Update);
+
+    timer->start();
+}
+
+CarAI::CarAI(CarAI &&other) noexcept :
+    car(other.car),
+    path(other.path),
+    timer(other.timer),
+    currPoint(other.currPoint),
+    carAIs(other.carAIs),
+    processDone(other.processDone)
+{
+    connect(timer, &QTimer::timeout, this, &CarAI::Update);
+}
+
+CarAI::CarAI(QVector<RoadPoint> *path, const QVector<CarAI>& carAIs) :
     car(new Car((*path)[0], vectorAngle((*path)[1].pos - (*path)[0].pos))),
     path(path),
     timer(new QTimer),
@@ -12,9 +36,9 @@ CarAI::CarAI(QVector<RoadPoint> *path, QVector<CarAI*>* carAIs) :
 {
     timer->setInterval(TICK_TIME);
 
-    timer->start();
-
     connect(timer, &QTimer::timeout, this, &CarAI::Update);
+
+    timer->start();
 }
 
 void CarAI::Update()
@@ -25,35 +49,38 @@ void CarAI::Update()
 
         if (currPoint == path->size())
         {
-            processDone = true;
-            disconnect(timer, &QTimer::timeout, this, &CarAI::Update);
+            ForceStop();
             return;
         }
+
+        car->setLevel((*path)[currPoint].level);
     }
 
     QPointF position = car->GetPosition().pos;
+    int level = car->GetPosition().level;
     float angle = car->GetAngle();
     QPointF rotatedVector = rotateVector(QPointF(1, 0), angle);
 
     auto angleDelta = angleBetweenVectors((*path)[currPoint].pos - position, rotatedVector);
 
     car->Rotate(angleDelta * REACTION_COEFFICIENT);
-
     angleDelta = qAbs(angleDelta);
+
     float angleCoef = rotatedVector.y() / rotatedVector.x();
     float offset = position.y() - angleCoef * position.x();
     float distanceToNearestCar = MAX_VISIBILITY_LENGTH;
 
-    for (auto carAI : *carAIs)
+    for (int iter = 0;iter < carAIs.size(); ++iter)
     {
-        if (carAI->isDone() || carAI == this)
+        if (carAIs[iter].isDone() || carAIs[iter].GetCar() == car)
         {
             continue;
         }
 
-        auto currPos = carAI->GetCar()->PredictPosition().pos;
+        QPointF currPos = carAIs[iter].GetCar()->PredictPosition().pos;
+        int currLevel = carAIs[iter].GetCar()->PredictPosition().level;
 
-        if (scalarMultiplicationVectors(currPos - position, rotatedVector) < 0)
+        if (currLevel != level || scalarMultiplicationVectors(currPos - position, rotatedVector) < 0)
         {
             continue;
         }
@@ -75,17 +102,31 @@ void CarAI::Update()
     car->setVelocity(MAX_SPEED * ((distanceToNearestCar - STOP_POINT) / MAX_VISIBILITY_LENGTH) * ((PI - angleDelta) / PI));
 }
 
-bool CarAI::isDone()
+void CarAI::ForceStop()
+{
+    if (car != nullptr)
+    {
+        delete car;
+        car = nullptr;
+    }
+
+    if (timer != nullptr)
+    {
+        disconnect(timer, &QTimer::timeout, this, &CarAI::Update);
+        timer->stop();
+        delete timer;
+        timer = nullptr;
+    }
+
+    processDone = true;
+}
+
+bool CarAI::isDone() const
 {
     return processDone;
 }
 
-RoadPoint CarAI::GetCarPosition()
-{
-    return car->GetPosition();
-}
-
-Car* CarAI::GetCar()
+Car* CarAI::GetCar() const
 {
     return car;
 }
