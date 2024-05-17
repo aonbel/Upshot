@@ -3,8 +3,7 @@
 Road::Road(const RoadPoint &start,
            const RoadPoint &end,
            TypeOfRoadDirection typeOfDir,
-           NumberOfRoadLines numberOfLines,
-           int level)
+           NumberOfRoadLines numberOfLines)
     : start(start)
     , end(end)
     , next(nullptr)
@@ -15,8 +14,6 @@ Road::Road(const RoadPoint &start,
     , startsOfLinesOnStart(new QVector<RoadPoint>)
     , endsOfLinesOnEnd(new QVector<RoadPoint>)
     , startsOfLinesOnEnd(new QVector<RoadPoint>)
-    , levelOnStart(start.level)
-    , levelOnEnd(end.level)
 {
     float rotatedAngle = GetAngleOfTheRoad() + PI / 2;
 
@@ -39,8 +36,6 @@ Road::Road(Road &obj)
     , startsOfLinesOnStart(new QVector<RoadPoint>(*obj.startsOfLinesOnStart))
     , endsOfLinesOnEnd(new QVector<RoadPoint>(*obj.endsOfLinesOnEnd))
     , startsOfLinesOnEnd(new QVector<RoadPoint>(*obj.startsOfLinesOnEnd))
-    , levelOnStart(obj.levelOnStart)
-    , levelOnEnd(obj.levelOnStart)
 {}
 
 Road::Road(Road &&obj) noexcept
@@ -54,8 +49,6 @@ Road::Road(Road &&obj) noexcept
     , startsOfLinesOnStart(obj.startsOfLinesOnStart)
     , endsOfLinesOnEnd(obj.endsOfLinesOnEnd)
     , startsOfLinesOnEnd(obj.startsOfLinesOnEnd)
-    , levelOnStart(obj.levelOnStart)
-    , levelOnEnd(obj.levelOnStart)
 {}
 
 void Road::setDefaultStartsOnStart()
@@ -71,13 +64,13 @@ void Road::setDefaultStartsOnStart()
 
     if (typeOfDir == TypeOfRoadDirection::one_way) {
         for (size_t currLine = 0; currLine < numberOfLines; ++currLine) {
-            startsOfLinesOnStart->push_back(RoadPoint(startPos, levelOnStart));
+            startsOfLinesOnStart->push_back(RoadPoint(startPos, start.level));
 
             startPos -= WIDTH_OF_LINE * rotationVector;
         }
     } else {
         for (size_t currLine = 0; currLine < numberOfLines / 2; ++currLine) {
-            startsOfLinesOnStart->push_back(RoadPoint(startPos, levelOnStart));
+            startsOfLinesOnStart->push_back(RoadPoint(startPos, start.level));
 
             startPos -= WIDTH_OF_LINE * rotationVector;
         }
@@ -99,7 +92,7 @@ void Road::setDefaultEndsOnStart()
     if (typeOfDir == TypeOfRoadDirection::two_way) {
         for (size_t currLine = 0; currLine < numberOfLines; ++currLine) {
             if (currLine >= numberOfLines / 2) {
-                endsOfLinesOnStart->push_back(RoadPoint(startPos, levelOnStart));
+                endsOfLinesOnStart->push_back(RoadPoint(startPos, start.level));
             }
 
             startPos -= WIDTH_OF_LINE * rotationVector;
@@ -120,7 +113,7 @@ void Road::setDefaultStartsOnEnd()
     if (typeOfDir == TypeOfRoadDirection::two_way) {
         for (size_t currLine = 0; currLine < numberOfLines; ++currLine) {
             if (currLine >= numberOfLines / 2) {
-                startsOfLinesOnEnd->push_back(RoadPoint(endPos, levelOnEnd));
+                startsOfLinesOnEnd->push_back(RoadPoint(endPos, end.level));
             }
 
             endPos -= WIDTH_OF_LINE * rotationVector;
@@ -140,13 +133,13 @@ void Road::setDefaultEndsOnEnd()
 
     if (typeOfDir == TypeOfRoadDirection::one_way) {
         for (size_t currLine = 0; currLine < numberOfLines; ++currLine) {
-            endsOfLinesOnEnd->push_back(RoadPoint(endPos, levelOnEnd));
+            endsOfLinesOnEnd->push_back(RoadPoint(endPos, end.level));
 
             endPos -= WIDTH_OF_LINE * rotationVector;
         }
     } else {
         for (size_t currLine = 0; currLine < numberOfLines / 2; ++currLine) {
-            endsOfLinesOnEnd->push_back(RoadPoint(endPos, levelOnEnd));
+            endsOfLinesOnEnd->push_back(RoadPoint(endPos, end.level));
 
             endPos -= WIDTH_OF_LINE * rotationVector;
         }

@@ -33,11 +33,12 @@ public:
     Car(const Car& other);
     Car(Car&& other) noexcept;
     Car(RoadPoint pos, float angle);
-    ~Car();
+    ~Car() override;
     void Rotate(float delta);
     void setVelocity(float newVelocity);
     void setLevel(int newLevel);
     void Update();
+    void ConnectTimer();
     RoadPoint GetPosition() const;
     RoadPoint PredictPosition() const;
     float GetAngle() const;
@@ -45,7 +46,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QRectF boundingRect() const override;
 signals:
-    void needToUpdateLevelOfCar(Car* car);
+    void needToUpdateLevelOfCar();
 };
 
 #endif // CAR_H

@@ -5,8 +5,9 @@ Car::Car(const Car &other)
     , angle(other.angle)
     , velocity(other.velocity)
     , timer(new QTimer)
+    , color(other.color)
 {
-    connect(timer, &QTimer::timeout, this, &Car::Update);
+    ConnectTimer();
 }
 
 Car::Car(Car &&other) noexcept
@@ -14,33 +15,34 @@ Car::Car(Car &&other) noexcept
     , angle(other.angle)
     , velocity(other.velocity)
     , timer(other.timer)
+    , color(other.color)
 {
-    connect(timer, &QTimer::timeout, this, &Car::Update);
+    ConnectTimer();
+    other.timer = nullptr;
 }
 
 Car::Car(RoadPoint pos, float angle)
     : pos(pos)
     , angle(angle)
     , velocity(0)
-    , timer(new QTimer)
+    , timer(new QTimer) 
 {
-    timer->setInterval(TICK_TIME);
-    connect(timer, &QTimer::timeout, this, &Car::Update);
-
     QRandomGenerator rng(std::chrono::duration_cast<std::chrono::milliseconds>(
                              std::chrono::system_clock::now().time_since_epoch())
                              .count());
 
     color = colors[rng() % 4];
 
-    timer->start();
+    ConnectTimer();
 }
 
 Car::~Car()
 {
-    disconnect(timer, &QTimer::timeout, this, &Car::Update);
-    delete timer;
-    timer = nullptr;
+    if (timer != nullptr)
+    {
+        delete timer;
+        timer = nullptr;
+    }
 }
 
 void Car::Rotate(float delta)
@@ -64,7 +66,7 @@ void Car::setLevel(int newLevel)
     if (newLevel != pos.level)
     {
         pos.level = newLevel;
-        needToUpdateLevelOfCar(this);
+        emit needToUpdateLevelOfCar();
     }
 }
 
@@ -72,6 +74,16 @@ void Car::Update()
 {
     pos.pos.setX(pos.pos.x() + velocity * qCos(angle));
     pos.pos.setY(pos.pos.y() + velocity * qSin(angle));
+}
+
+void Car::ConnectTimer()
+{
+    connect(timer, &QTimer::timeout, this, &Car::Update);
+    if (!timer->isActive())
+    {
+        timer->setInterval(TICK_TIME);
+        timer->start();
+    }
 }
 
 RoadPoint Car::GetPosition() const

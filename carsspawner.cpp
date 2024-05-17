@@ -3,7 +3,7 @@
 CarsSpawner::CarsSpawner(QVector<RoadEdge> *edges, GraphicScene *graphicsScene)
     : graphicsScene(graphicsScene)
     , paths(new QVector<QVector<RoadPoint> *>)
-    , carAIs(QVector<CarAI>())
+    , carAIs(new QVector<CarAI>)
     , timer(new QTimer)
     , rng(new std::mt19937(time(nullptr)))
 {
@@ -53,14 +53,7 @@ CarsSpawner::CarsSpawner(QVector<RoadEdge> *edges, GraphicScene *graphicsScene)
 
 CarsSpawner::~CarsSpawner()
 {
-    disconnect(timer, &QTimer::timeout, this, &CarsSpawner::Update);
-
-    for (int iter = 0;iter<carAIs.size();++iter)
-    {
-        carAIs[iter].ForceStop();
-    }
-
-    carAIs.clear();
+    delete carAIs;
     delete paths;
     delete timer;
     delete rng;
@@ -72,35 +65,27 @@ void CarsSpawner::Update()
         return;
     }
 
-    if ((*rng)() % CHANCE_OF_SPAWNING_CAR == 0 && carAIs.size() < MAX_CAR_COUNT) {
+    if ((*rng)() % CHANCE_OF_SPAWNING_CAR == 0 && carAIs->size() < MAX_CAR_COUNT) {
         auto pos = (*rng)() % paths->size();
 
         bool isCarNear = false;
 
-        for (int iter = 0;iter<carAIs.size();++iter)
+        for (int iter = 0;iter<carAIs->size();++iter)
         {
-            if (!carAIs[iter].isDone() && isEqual(carAIs[iter].GetCar()->GetPosition().pos, paths->at(pos)->at(0).pos, CAR_LENGTH)) {
+            if (!(*carAIs)[iter].isDone() && isEqual((*carAIs)[iter].GetCar()->GetPosition().pos, paths->at(pos)->at(0).pos, CAR_LENGTH)) {
                 isCarNear = true;
             }
         }
 
         if (!isCarNear) {
-            carAIs.push_back(CarAI(paths->at(pos), carAIs));
-            graphicsScene->setItemLayer(carAIs.back().GetCar(), carAIs.back().GetCar()->GetPosition().level);
-            connect(carAIs.back().GetCar(), &Car::needToUpdateLevelOfCar, this, &CarsSpawner::UpdateLevelOfCar);
+            carAIs->push_back(CarAI(paths->at(pos), carAIs, graphicsScene));
         }
     }
 
-    for (size_t iter = 0; iter < carAIs.size(); ++iter) {
-        if (carAIs[iter].isDone()) {
-            carAIs[iter].ForceStop();
-            carAIs.erase(carAIs.begin() + iter);
+    for (size_t iter = 0; iter < carAIs->size(); ++iter) {
+        if ((*carAIs)[iter].isDone()) {
+            carAIs->erase(carAIs->begin() + iter);
             --iter;
         }
     }
-}
-
-void CarsSpawner::UpdateLevelOfCar(Car *car)
-{
-    graphicsScene->setItemLayer(car, car->GetPosition().level);
 }

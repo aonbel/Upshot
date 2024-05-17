@@ -28,9 +28,6 @@ const std::array<QColor, 4> roadLevelColors({ Qt::black, Qt::darkGray, Qt::gray,
 class Road : public QGraphicsItem
 {
 private:
-    int levelOnStart;
-    int levelOnEnd;
-
     RoadPoint start;
     RoadPoint end;
 
@@ -51,7 +48,7 @@ private:
     bool startsOfLinesOnEndDef;
 
 public:
-    Road(const RoadPoint& start, const RoadPoint& end, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines, int level);
+    Road(const RoadPoint& start, const RoadPoint& end, TypeOfRoadDirection typeOfDir, NumberOfRoadLines numberOfLines);
     Road(Road& obj);
     Road(Road&& obj) noexcept;
 

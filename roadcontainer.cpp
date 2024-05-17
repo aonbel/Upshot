@@ -17,7 +17,7 @@ void RoadContainer::Clear()
 
 void RoadContainer::AddRoad(const QPointF &start, const QPointF &end, RoadBrush brushOnStart, RoadBrush brushOnEnd)
 {
-    Road* newRoad = new Road(RoadPoint(start, brushOnStart.GetLevel()), RoadPoint(end, brushOnEnd.GetLevel()), brushOnStart.GetType(), brushOnStart.GetNumberOfLines(), brushOnStart.GetLevel());
+    Road* newRoad = new Road(RoadPoint(start, brushOnStart.GetLevel()), RoadPoint(end, brushOnEnd.GetLevel()), brushOnStart.GetType(), brushOnStart.GetNumberOfLines());
 
     for (auto road : *allRoads)
     {

@@ -14,7 +14,7 @@ class CarsSpawner : public QObject
 {
     Q_OBJECT
     GraphicScene* graphicsScene;
-    QVector<CarAI> carAIs;
+    QVector<CarAI>* carAIs;
     QVector<QVector<RoadPoint>*>* paths;
     QTimer* timer;
     std::mt19937* rng;
@@ -22,8 +22,6 @@ public:
     CarsSpawner(QVector<RoadEdge>* edges, GraphicScene* graphicsScene);
     ~CarsSpawner() override;
     void Update();
-public slots:
-    void UpdateLevelOfCar(Car* car);
 };
 
 #endif // CARSSPAWNER_H
